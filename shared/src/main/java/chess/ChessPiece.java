@@ -62,10 +62,11 @@ public class ChessPiece {
             case KNIGHT -> Knight.getKnight(board, myPosition, this.pieceColor);
             case ROOK -> Rook.getRook(board, myPosition, this.pieceColor);
             case PAWN -> Pawn.getPawn(board, myPosition, this.pieceColor);
-        }
+        };
         throw new RuntimeException("Not implemented");
 
     }
+
 
     @Override
     public boolean equals(Object o) {
