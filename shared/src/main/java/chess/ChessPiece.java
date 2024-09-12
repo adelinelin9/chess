@@ -58,14 +58,14 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> validMoves = new HashSet<>();
 
-        switch (type) {
-            case KING -> King.getKing(board, myPosition, this.pieceColor);
-            case QUEEN -> Queen.getQueen(board, myPosition, this.pieceColor);
-            case BISHOP -> Bishop.getBishop(board, myPosition, this.pieceColor);
-            case KNIGHT -> Knight.getKnight(board, myPosition, this.pieceColor);
-            case ROOK -> Rook.getRook(board, myPosition, this.pieceColor);
-            case PAWN -> Pawn.getPawn(board, myPosition, this.pieceColor);
-        };
+//        switch (type) {
+//            case KING -> King.getKing(board, myPosition, this.pieceColor);
+//            case QUEEN -> Queen.getQueen(board, myPosition, this.pieceColor);
+//            case BISHOP -> Bishop.getBishop(board, myPosition, this.pieceColor);
+//            case KNIGHT -> Knight.getKnight(board, myPosition, this.pieceColor);
+//            case ROOK -> Rook.getRook(board, myPosition, this.pieceColor);
+//            case PAWN -> Pawn.getPawn(board, myPosition, this.pieceColor);
+//        };
         return validMoves;
         //throw new RuntimeException("Not implemented");
     }
@@ -84,9 +84,9 @@ public class ChessPiece {
 
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
 
-                if (onBoard(newRow, newCol) && (board.getPiece(newPosition) == null || board.getPiece(newPosition).pieceColor != this.pieceColor)) {
-                    validMoves.add(new ChessMove(position, newPosition));
-                }
+//                if (onBoard(newRow, newCol) && (board.getPiece(newPosition) == null || board.getPiece(newPosition).pieceColor != this.pieceColor)) {
+//                    validMoves.add(new ChessMove(position, newPosition));
+//                }
             }
         }
     }
