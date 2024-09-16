@@ -59,12 +59,12 @@ public class ChessPiece {
         Collection<ChessMove> validMoves = new HashSet<>();
 
         switch (type) {
-            case KING -> King.getKing(board, myPosition, validMoves);
-            case QUEEN -> Queen.getQueen(board, myPosition, validMoves);
-            case BISHOP -> Bishop.getBishop(board, myPosition, validMoves);
-            case KNIGHT -> Knight.getKnight(board, myPosition, validMoves);
-            case ROOK -> Rook.getRook(board, myPosition, validMoves);
-            case PAWN -> Pawn.getPawn(board, myPosition, validMoves);
+            case KING -> getKing(board, myPosition, validMoves);
+//            case QUEEN -> getQueen(board, myPosition, validMoves);
+//            case BISHOP -> getBishop(board, myPosition, validMoves);
+//            case KNIGHT -> getKnight(board, myPosition, validMoves);
+//            case ROOK -> getRook(board, myPosition, validMoves);
+//            case PAWN -> getPawn(board, myPosition, validMoves);
         };
         return validMoves;
     }
@@ -90,6 +90,9 @@ public class ChessPiece {
         }
     }
 
+    private boolean onBoard(int row, int col) {
+        return row >= 1 && row < 8 && col >= 1 && col < 8;
+    }
 
     @Override
     public boolean equals(Object o) {
