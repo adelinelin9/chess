@@ -82,7 +82,6 @@ public class ChessBoard {
         board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
 
-
     }
 
     @Override
