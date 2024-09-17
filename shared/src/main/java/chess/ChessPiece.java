@@ -61,7 +61,7 @@ public class ChessPiece {
             case KING -> getKing(board, myPosition, validMoves);
             case QUEEN -> getQueen(board, myPosition, validMoves);
             case BISHOP -> getBishop(board, myPosition, validMoves);
-//            case KNIGHT -> getKnight(board, myPosition, validMoves);
+            case KNIGHT -> getKnight(board, myPosition, validMoves);
 //            case ROOK -> getRook(board, myPosition, validMoves);
 //            case PAWN -> getPawn(board, myPosition, validMoves);
         };
@@ -105,14 +105,33 @@ public class ChessPiece {
     }
 
     private void getBishop(ChessBoard board, ChessPosition position, Collection<ChessMove> validMoves) {
-        int currentRow0 = position.getRow();
-        int currentCol0 = position.getColumn();
-        int[] directions0 = {-1, 1};
-        for (int rowMove : directions0) {
-            for (int colMove : directions0) {
-                int newRow = currentRow0 + rowMove;
-                int newCol = currentCol0 + colMove;
+        int currentRow1 = position.getRow();
+        int currentCol1 = position.getColumn();
+        int[] directions1 = {-1, 1};
+        for (int rowMove : directions1) {
+            for (int colMove : directions1) {
+                int newRow = currentRow1 + rowMove;
+                int newCol = currentCol1 + colMove;
                 movePiece(rowMove, colMove, newRow, newCol, board, position, validMoves);
+            }
+        }
+    }
+
+    private void getKnight(ChessBoard board, ChessPosition position, Collection<ChessMove> validMoves) {
+        int currentRow2 = position.getRow();
+        int currentCol2 = position.getColumn();
+        int[] offsets = {-1, 1, -2, 2};
+        for (int rowMove : offsets) {
+            for (int colMove : offsets) {
+                if (Math.abs(rowMove) + Math.abs(colMove) != 3) {
+                    continue;
+                }
+                int newRow = currentRow2 + rowMove;
+                int newCol = currentCol2 + colMove;
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                if (onBoard(newRow, newCol) && (board.getPiece(newPosition) == null || this.pieceColor != board.getPiece(newPosition).pieceColor)){
+                    validMoves.add(new ChessMove(newPosition, newPosition));
+                }
             }
         }
     }
