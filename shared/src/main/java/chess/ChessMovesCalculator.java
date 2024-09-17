@@ -80,16 +80,16 @@ public class ChessMovesCalculator {
 
     public static boolean pawnUp(ChessPiece piece, int nextRow) {
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            return (piece.getTeamColor() == ChessGame.TeamColor.WHITE && nextRow == 7) ||
-                    (piece.getTeamColor() == ChessGame.TeamColor.BLACK && nextRow == 0);
+            return (piece.getTeamColor() == ChessGame.TeamColor.BLACK && nextRow == 0) ||
+                    (piece.getTeamColor() == ChessGame.TeamColor.WHITE && nextRow == 7);
         }
         return false;
     }
 
     private static int getSteps(ChessPiece piece, ChessPosition position) {
         return switch (piece.getPieceType()) {
-            case KNIGHT, KING -> 1;
             case PAWN -> piece.pawnFirstMove(position) ? 2 : 1;
+            case KNIGHT, KING -> 1;
             default -> 7;
         };
     }
