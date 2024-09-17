@@ -1,5 +1,4 @@
 package chess;
-import chess.moves.*;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.HashSet;
@@ -60,8 +59,8 @@ public class ChessPiece {
 
         switch (type) {
             case KING -> getKing(board, myPosition, validMoves);
-//            case QUEEN -> getQueen(board, myPosition, validMoves);
-//            case BISHOP -> getBishop(board, myPosition, validMoves);
+            case QUEEN -> getQueen(board, myPosition, validMoves);
+            case BISHOP -> getBishop(board, myPosition, validMoves);
 //            case KNIGHT -> getKnight(board, myPosition, validMoves);
 //            case ROOK -> getRook(board, myPosition, validMoves);
 //            case PAWN -> getPawn(board, myPosition, validMoves);
@@ -90,8 +89,53 @@ public class ChessPiece {
         }
     }
 
+    private void getQueen(ChessBoard board, ChessPosition position, Collection<ChessMove> validMoves) {
+        int currentRow0 = position.getRow();
+        int currentCol0 = position.getColumn();
+
+        int[] directions0 = {-1, 0, 1};
+
+        for (int rowMove : directions0) {
+            for (int colMove : directions0) {
+                int newRow = currentRow0 + rowMove;
+                int newCol = currentCol0 + colMove;
+                movePiece(rowMove, colMove, newRow, newCol, board, position, validMoves);
+            }
+        }
+    }
+
+    private void getBishop(ChessBoard board, ChessPosition position, Collection<ChessMove> validMoves) {
+        int currentRow0 = position.getRow();
+        int currentCol0 = position.getColumn();
+        int[] directions0 = {-1, 1};
+        for (int rowMove : directions0) {
+            for (int colMove : directions0) {
+                int newRow = currentRow0 + rowMove;
+                int newCol = currentCol0 + colMove;
+                movePiece(rowMove, colMove, newRow, newCol, board, position, validMoves);
+            }
+        }
+    }
+
     private boolean onBoard(int row, int col) {
         return row >= 1 && row < 8 && col >= 1 && col < 8;
+    }
+
+    public void movePiece(int rowMove, int colMove, int newRow, int newCol, ChessBoard board, ChessPosition position, Collection<ChessMove> validMoves) {
+        while (onBoard(newRow, newCol)) {
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+            ChessPiece spot = board.getPiece(newPosition);
+            if (spot == null) {
+                validMoves.add(new ChessMove(position, newPosition));
+            } else if (spot.pieceColor != this.pieceColor) {
+                validMoves.add(new ChessMove(position, newPosition));
+                break;
+            } else{
+                break;
+            }
+            newRow += rowMove;
+            newCol += colMove;
+        }
     }
 
     @Override
