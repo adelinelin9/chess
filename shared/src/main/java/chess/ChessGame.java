@@ -37,6 +37,14 @@ public class ChessGame {
         this.currentTeam = team;
     }
 
+    public void switchTeams() {
+        if(currentTeam == TeamColor.WHITE) {
+            currentTeam = TeamColor.BLACK;
+        } else {
+            currentTeam = TeamColor.WHITE;
+        }
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -53,7 +61,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece piece = getBoard.getPiece(startPosition);
+        ChessPiece piece = getBoard().getPiece(startPosition);
         if (piece == null) return Collections.emptyList();
 
         Collection<ChessMove> moves = piece.pieceMoves(getBoard(), startPosition);
@@ -63,7 +71,7 @@ public class ChessGame {
             try {
                 ChessBoard cloneBoard = getBoard().cloneBoard();
                 cloneBoard.executeMove(move);
-                if(!isInCheckCloneBoard(cloneBoard, piece.getTeamColor())) {
+                if(!isInCheckClonedBoard(cloneBoard, piece.getTeamColor())) {
                     legalMoves.add(move);
                 }
             } catch (InvalidMoveException e) {
@@ -95,10 +103,10 @@ public class ChessGame {
             throw new InvalidMoveException("Move isn't allowed");
         }
 
-        ChessBoard cloneBoard = this.board.cloneBoard();
+        ChessBoard clonedBoard = this.board.cloneBoard();
 
-        cloneBoard.executeMove(move);
-        if (isInCheckClonedBoard(cloneBoard, currentTeam)) {
+        clonedBoard.executeMove(move);
+        if (isInCheckClonedBoard(clonedBoard, currentTeam)) {
             throw new InvalidMoveException("This Move will end with your king in check");
         }
         this.board.executeMove(move);
@@ -142,7 +150,7 @@ public class ChessGame {
 
         for (int i=0; i < board.getRowCount(); i++){
             for (int j = 0; j < board.getColCount(board.getRowCount()); j++) {
-                ChessPosition piecePosition = new ChessPosition(i + 1, j+1);
+                ChessPosition piecePosition = new ChessPosition(i+1, j+1);
                 ChessPiece piece = board.getPiece(piecePosition);
                 if (piece != null && piece.getTeamColor() == opposingTeam) {
                     Collection<ChessMove> pieceMoves = ChessMovesCalculator.moveCalculator(piece, board, piecePosition);
@@ -168,23 +176,26 @@ public class ChessGame {
             return false;
         }
         ChessBoard board = getBoard();
-        for (int i = 0; i < board.getRowCount(); i++) {
-            ChessPosition piecePosition = new ChessPosition(i+1, j+1);
-            ChessPiece piece = board.getPiece(piecePosition);
-            if (piece != null && piece.getTeamColor() == teamColor) {
-                Collection<ChessMove> moves = ChessMovesCalculator.moveCalculator(piece,board,piecePosition);
-                for (ChessMove move : moves) {
-                    ChessBoard clonedBoard = board.cloneBoard();
-                    try {
-                        clonedBoard.executeMove(move);
-                        if (!isInCheckClonedBoard(clonedBoard, teamColor)) {
-                            return false;
-                        }
-                    } catch (InvalidMoveException e) {
 
+        for (int i = 0; i < board.getRowCount(); i++) {
+            for (int j = 0; j < board.getColCount(board.getRowCount()); j++) {
+                ChessPosition piecePosition = new ChessPosition(i+1, j+1);
+                ChessPiece piece = board.getPiece(piecePosition);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = ChessMovesCalculator.moveCalculator(piece, board, piecePosition);
+                    for (ChessMove move : moves) {
+                        ChessBoard clonedBoard = board.cloneBoard();
+                        try {
+                            clonedBoard.executeMove(move);
+                            if (!isInCheckClonedBoard(clonedBoard, teamColor)) {
+                                return false;
+                            }
+                        } catch (InvalidMoveException e) {
+                        }
                     }
                 }
             }
+
         } return true;
     }
 
@@ -196,27 +207,31 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(isInCheck(teamColor)){
+        if(isInCheck(teamColor)) {
             return false;
         }
+
         ChessBoard board = getBoard();
+
         for (int i = 0; i < board.getRowCount(); i++) {
             for (int j = 0; j < board.getColCount(board.getRowCount()); j++) {
-                ChessPosition piecePosition = new ChessPosition (i+1, j+1);
+                ChessPosition piecePosition = new ChessPosition(i+1, j+1);
                 ChessPiece piece = board.getPiece(piecePosition);
-                if (piece != null && piece.getTeamColor () == teamColor) {
-                    ChessBoard clonedBoard = board.cloneBoard();
-                    try {
-                        clonedBoard.executeMove(move);
-                        if (!isInCheckClonedBoard(clonedBoard, teamColor)) {
-                            return false;
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    for (ChessMove move : validMoves(piecePosition)) {
+                        ChessBoard clonedBoard = board.cloneBoard();
+                        try {
+                            clonedBoard.executeMove(move);
+                            if (!isInCheckClonedBoard(clonedBoard, teamColor)) {
+                                return false;
+                            }
+                        } catch (InvalidMoveException ignore) {
                         }
-                    } catch (InvalidMoveException ignore) {
-
                     }
                 }
             }
-        } return true; 
+
+        } return true;
     }
 
     /**
@@ -225,7 +240,10 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        if(board == null) {
+            throw new IllegalArgumentException("Board can't be null");
+        }
+        this.board=board;
     }
 
     /**
