@@ -98,7 +98,7 @@ public class ChessGame {
         ChessBoard cloneBoard = this.board.cloneBoard();
 
         cloneBoard.executeMove(move);
-        if (isInCheckCloneBoard(cloneBoard, currentTeam)) {
+        if (isInCheckClonedBoard(cloneBoard, currentTeam)) {
             throw new InvalidMoveException("This Move will end with your king in check");
         }
         this.board.executeMove(move);
@@ -136,6 +136,27 @@ public class ChessGame {
         return false;
     }
 
+    private boolean isInCheckClonedBoard(ChessBoard board, TeamColor teamColor) {
+        ChessPosition kingPosition = board.findKing(teamColor);
+        TeamColor opposingTeam = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+        for (int i=0; i < board.getRowCount(); i++){
+            for (int j = 0; j < board.getColCount(board.getRowCount()); j++) {
+                ChessPosition piecePosition = new ChessPosition(i + 1, j+1);
+                ChessPiece piece = board.getPiece(piecePosition);
+                if (piece != null && piece.getTeamColor() == opposingTeam) {
+                    Collection<ChessMove> pieceMoves = ChessMovesCalculator.moveCalculator(piece, board, piecePosition);
+                    for (ChessMove move : pieceMoves) {
+                        if (move.getEndPosition().equals(kingPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -143,7 +164,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
@@ -172,6 +193,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }
