@@ -102,7 +102,7 @@ public class ChessGame {
             throw new InvalidMoveException("This Move will end with your king in check");
         }
         this.board.executeMove(move);
-        switchTeams(); 
+        switchTeams();
     }
 
     /**
@@ -112,7 +112,28 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessBoard board = getBoard();
+        ChessPosition kingPosition = board.findKing(teamColor);
+        int numRows = board.getRowCount();
+        int numCols = board.getColCount(numRows);
+
+        ChessGame.TeamColor opposingColor = (teamColor == TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+        for(int i=0; i < numRows; i++) {
+            for (int j=0; j < numCols; j++) {
+                ChessPosition piecePosition = new ChessPosition(i+1, j+1);
+                ChessPiece piece = board.getPiece(piecePosition);
+                if(piece != null && piece.getTeamColor() == opposingColor) {
+                    Collection<ChessMove> moves = ChessMovesCalculator.moveCalculator(piece, board, piecePosition);
+                    for(ChessMove move : moves) {
+                        if (move.getEndPosition().equals(kingPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
