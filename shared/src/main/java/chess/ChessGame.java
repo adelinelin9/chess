@@ -59,7 +59,18 @@ public class ChessGame {
         Collection<ChessMove> moves = piece.pieceMoves(getBoard(), startPosition);
         Collection<ChessMove> legalMoves = new ArrayList<>();
 
-        
+        for(ChessMove move : moves) {
+            try {
+                ChessBoard cloneBoard = getBoard().cloneBoard();
+                cloneBoard.executeMove(move);
+                if(!isInCheckCloneBoard(cloneBoard, piece.getTeamColor())) {
+                    legalMoves.add(move);
+                }
+            } catch (InvalidMoveException e) {
+
+            }
+        }
+        return legalMoves;
     }
 
     /**
