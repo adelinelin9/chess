@@ -80,7 +80,29 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start = move.getStartPosition();
+        ChessPiece piece = getBoard().getPiece(start);
+
+        if(piece == null) {
+            throw new InvalidMoveException("Piece needed to move");
+        }
+
+        if(piece.getTeamColor() != currentTeam) {
+            throw new InvalidMoveException("Not your turn");
+        }
+
+        if(!validMoves(start).contains(move)) {
+            throw new InvalidMoveException("Move isn't allowed");
+        }
+
+        ChessBoard cloneBoard = this.board.cloneBoard();
+
+        cloneBoard.executeMove(move);
+        if (isInCheckCloneBoard(cloneBoard, currentTeam)) {
+            throw new InvalidMoveException("This Move will end with your king in check");
+        }
+        this.board.executeMove(move);
+        switchTeams(); 
     }
 
     /**
