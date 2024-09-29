@@ -164,7 +164,28 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        ChessBoard board = getBoard();
+        for (int i = 0; i < board.getRowCount(); i++) {
+            ChessPosition piecePosition = new ChessPosition(i+1, j+1);
+            ChessPiece piece = board.getPiece(piecePosition);
+            if (piece != null && piece.getTeamColor() == teamColor) {
+                Collection<ChessMove> moves = ChessMovesCalculator.moveCalculator(piece,board,piecePosition);
+                for (ChessMove move : moves) {
+                    ChessBoard clonedBoard = board.cloneBoard();
+                    try {
+                        clonedBoard.executeMove(move);
+                        if (!isInCheckClonedBoard(clonedBoard, teamColor)) {
+                            return false;
+                        }
+                    } catch (InvalidMoveException e) {
 
+                    }
+                }
+            }
+        } return true;
     }
 
     /**
