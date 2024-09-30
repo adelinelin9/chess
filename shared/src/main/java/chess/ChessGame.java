@@ -91,16 +91,17 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPiece piece = getBoard().getPiece(start);
 
-        if(piece == null) {
-            throw new InvalidMoveException("Piece needed to move");
+
+        if(!validMoves(start).contains(move)) {
+            throw new InvalidMoveException("Move isn't allowed");
         }
 
         if(piece.getTeamColor() != currentTeam) {
             throw new InvalidMoveException("Not your turn");
         }
 
-        if(!validMoves(start).contains(move)) {
-            throw new InvalidMoveException("Move isn't allowed");
+        if(piece == null) {
+            throw new InvalidMoveException("Piece needed to move");
         }
 
         ChessBoard clonedBoard = this.board.cloneBoard();
