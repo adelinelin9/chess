@@ -37,8 +37,51 @@ public class UserHandler {
         }
     };
 
+    public Route login = (Request req, Response res) -> {
+        UserData user = JSONUtil.fromJson(req.body(), UserData.class);
+        try {
+            AuthData auth = userService.login(user);
+            res.status(200);
+            return JSONUtil.toJson(auth);
+        } catch (DataAccessException e ) {
+            res.status(401);
+            return "{\"message\" : \"Error: unauthorized\"}";
+        }
+    };
 
+    public Route logout = (Request req, Response res) -> {
+        String authToken = req.headers("Authorization").replace("Bearer ", "");
+        try {
+            validateAuthToken(authToken);
+            userService.logout(authToken);
+            res.status(200);
+            return "{}";
+        } catch(InvalidUserDataException e) {
+            res.status(401);
+            return "{\"message\" : \"Error: unauthorized\"}";
+        } catch (DataAccessException e ) {
+            res.status(401);
+            return "{\"message\" : \"Error:" + e.getMessage() + "\"}";
+        }
+    };
 
+    private void validateUserData(UserData user) throws Exception {
+        if (user.getUsername() == null || user.getUsername().isEmpty() ||
+                user.getPassword() == null || user.getPassword().isEmpty() ||
+                user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new InvalidUserDataException("Invalid user data");
+        }
+    }
 
+    private void validateAuthToken(String authToken) throws Exception {
+        if(authToken == null || authToken.isEmpty()) {
+            throw new InvalidUserDataException("Invalid auth token");
+        }
+    }
 
+    class InvalidUserDataException extends Exception {
+        public InvalidUserDataException(String message) {
+            super(message);
+        }
+    }
 }
