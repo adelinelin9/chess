@@ -1,6 +1,10 @@
+import server.Server;
+
 public class Main {
 
     public static void main(String[] args) {
-        new Server().run(8080);
+
+        Server sev = new Server();
+                sev.run(8080);
     }
 }
