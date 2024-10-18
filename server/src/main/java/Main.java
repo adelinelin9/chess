@@ -1,4 +1,6 @@
 public class Main {
-    new Server().run(8080);
 
+    public static void main(String[] args) {
+        new Server().run(8080);
+    }
 }
