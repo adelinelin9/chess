@@ -1,56 +1,80 @@
+//package dataaccess;
+//
+//import model.GameData;
+//import java.util.HashMap;
+//import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class GameDAO {
+//
+//    //keep track of games
+//    private Map<Integer, GameData> games = new HashMap<>();
+//    private AuthDAO authDAO = new AuthDAO();
+//
+//    public void clear() throws DataAccessException{
+//        games.clear();
+//    }
+//
+//    public void createGame(GameData game) throws DataAccessException{
+//        if(games.containsKey(game.getGameID())) {
+//            throw new DataAccessException("This game already exists.");
+//        }
+//        games.put(game.getGameID(), game);
+//    }
+//
+//    public GameData getGame(int gameID) throws DataAccessException{
+//        if(!games.containsKey(gameID)) {
+//            throw new DataAccessException("Game not found.");
+//        }
+//        return games.get(gameID);
+//    }
+//
+//    public List<GameData> listGames() throws DataAccessException{
+//        return new ArrayList<>(games.values());
+//    }
+//
+//    public void updateGame(GameData game) throws DataAccessException{
+//        if(!games.containsKey(game.getGameID())) {
+//            throw new DataAccessException("Game not found.");
+//        }
+//        games.put(game.getGameID(), game);
+//    }
+//
+//    public void removePlayer(String authToken, int gameID) throws DataAccessException {
+//        String username = authDAO.getAuth(authToken).getUsername();
+//        GameData game = getGame(gameID);
+//        if (game.getWhiteUsername() != null && game.getWhiteUsername().equals(username)) {
+//            game.setWhiteUsername(null);
+//        } else if (game.getBlackUsername() != null && game.getBlackUsername().equals(username)) {
+//            game.setBlackUsername(null);
+//        } else {
+//            throw new DataAccessException("Player not found in the game.");
+//        }
+//        updateGame(game);
+//    }
+//}
+
 package dataaccess;
 
-import model.GameData;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
+import chess.ChessGame;
+import records.*;
+import requests.CreateGameRequest;
 
-public class GameDAO {
+import java.util.Collection;
 
-    //keep track of games
-    private Map<Integer, GameData> games = new HashMap<>();
-    private AuthDAO authDAO = new AuthDAO();
+public interface GameDAO {
+    void clearGames() throws DataAccessException;
+    GameData addGame(CreateGameRequest request) throws DataAccessException;
 
-    public void clear() throws DataAccessException{
-        games.clear();
-    }
+    GameData getGame(Integer gameID) throws DataAccessException;
+    Collection<GameData> getGames() throws DataAccessException;
 
-    public void createGame(GameData game) throws DataAccessException{
-        if(games.containsKey(game.getGameID())) {
-            throw new DataAccessException("This game already exists.");
-        }
-        games.put(game.getGameID(), game);
-    }
+    boolean updateGame(int gameID, ChessGame game);
 
-    public GameData getGame(int gameID) throws DataAccessException{
-        if(!games.containsKey(gameID)) {
-            throw new DataAccessException("Game not found.");
-        }
-        return games.get(gameID);
-    }
+    boolean removePlayer(int gameID, String username);
 
-    public List<GameData> listGames() throws DataAccessException{
-        return new ArrayList<>(games.values());
-    }
 
-    public void updateGame(GameData game) throws DataAccessException{
-        if(!games.containsKey(game.getGameID())) {
-            throw new DataAccessException("Game not found.");
-        }
-        games.put(game.getGameID(), game);
-    }
+    boolean setPlayer(String username, String playerColor, GameData game) throws DataAccessException;
 
-    public void removePlayer(String authToken, int gameID) throws DataAccessException {
-        String username = authDAO.getAuth(authToken).getUsername();
-        GameData game = getGame(gameID);
-        if (game.getWhiteUsername() != null && game.getWhiteUsername().equals(username)) {
-            game.setWhiteUsername(null);
-        } else if (game.getBlackUsername() != null && game.getBlackUsername().equals(username)) {
-            game.setBlackUsername(null);
-        } else {
-            throw new DataAccessException("Player not found in the game.");
-        }
-        updateGame(game);
-    }
 }

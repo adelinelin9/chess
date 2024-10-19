@@ -1,36 +1,52 @@
+//package dataaccess;
+//
+//
+//import model.AuthData;
+//
+//import java.util.HashMap;
+//import java.util.Map;
+//
+//public class AuthDAO {
+//    private Map<String, AuthData> auths = new HashMap<>();
+//
+//    public void clear() throws DataAccessException{
+//        auths.clear();
+//    }
+//
+//    public void createAuth(AuthData auth) throws DataAccessException {
+//        if(auths.containsKey(auth.getAuthToken())){
+//            throw new DataAccessException("Auth token already exists.");
+//        }
+//        auths.put(auth.getAuthToken(), auth);
+//    }
+//
+//    public AuthData getAuth(String authToken) throws DataAccessException {
+//        if(!auths.containsKey(authToken)) {
+//            throw new DataAccessException("Auth token not found.");
+//        }
+//        return auths.get(authToken);
+//    }
+//
+//    public void deleteAuth(String authToken) throws DataAccessException {
+//        if(!auths.containsKey(authToken)) {
+//            throw new DataAccessException("Auth token not found.");
+//        }
+//        auths.remove(authToken);
+//    }
+//}
+
 package dataaccess;
 
+import records.*;
 
-import model.AuthData;
+public interface AuthDAO {
 
-import java.util.HashMap;
-import java.util.Map;
+    void clearAuths() throws DataAccessException;
 
-public class AuthDAO {
-    private Map<String, AuthData> auths = new HashMap<>();
+    AuthData getAuth(String authToken) throws DataAccessException;
+    void addAuth(AuthData authToken) throws DataAccessException;
+    void deleteAuthorization(String authToken) throws DataAccessException;
 
-    public void clear() throws DataAccessException{
-        auths.clear();
-    }
+    boolean inAuths(String authToken) throws  DataAccessException;
 
-    public void createAuth(AuthData auth) throws DataAccessException {
-        if(auths.containsKey(auth.getAuthToken())){
-            throw new DataAccessException("Auth token already exists.");
-        }
-        auths.put(auth.getAuthToken(), auth);
-    }
-
-    public AuthData getAuth(String authToken) throws DataAccessException {
-        if(!auths.containsKey(authToken)) {
-            throw new DataAccessException("Auth token not found.");
-        }
-        return auths.get(authToken);
-    }
-
-    public void deleteAuth(String authToken) throws DataAccessException {
-        if(!auths.containsKey(authToken)) {
-            throw new DataAccessException("Auth token not found.");
-        }
-        auths.remove(authToken);
-    }
 }
