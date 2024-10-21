@@ -9,18 +9,12 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessMove {
-
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = null;
-    }
-
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                     ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
@@ -63,13 +57,14 @@ public class ChessMove {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        }
+        };
         if (o == null || getClass() != o.getClass()) {
             return false;
-        }
+        };
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition)
-                && promotionPiece == chessMove.promotionPiece;
+        return Objects.equals(startPosition, chessMove.startPosition) &&
+                Objects.equals(endPosition, chessMove.endPosition) &&
+                promotionPiece == chessMove.promotionPiece;
     }
 
     @Override
