@@ -12,9 +12,9 @@ public class Server {
     private ClearHandler clearHandler;
 
     private void initializeComponents() {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-        UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new SQLAuthDAO();
+        GameDAO gameDAO = new SQLGameDAO();
+        UserDAO userDAO = new SQLUserDAO();
 
         GameService gameService = new GameService(gameDAO, authDAO);
         UserService userService = new UserService(userDAO, authDAO);
@@ -26,7 +26,11 @@ public class Server {
     }
 
     public Server() {
-        initializeComponents();
+        try {
+            initializeComponents();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {
