@@ -117,22 +117,15 @@ public class SQLDAOTests {
                         "black",
                         "gameName",
                         new ChessGame()));
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var statement = connection.prepareStatement(
-                    "SELECT * FROM GameData WHERE gameID = ?")) {
-                statement.setInt(1, 10);
-                try (var resultSet = statement.executeQuery()) {
-                    resultSet.next();
-                    assert resultSet.getInt("gameID") == 1;
-                    assert resultSet.getString("whiteUsername").equals("white");
-                    assert resultSet.getString("blackUsername").equals("black");
-                    assert resultSet.getString("gameName").equals("gameName");
-                    assert new Gson().fromJson(resultSet.getString("game"), ChessGame.class).equals
-                            (new ChessGame());
-                }
-            }
-        } catch (SQLException | DataAccessException e) {
-            assertEquals("Illegal operation on empty result set.", e.getMessage());
+        try {
+            gameDao.createGame(
+                    new GameData(1,
+                            "white",
+                            "black",
+                            "gameName",
+                            new ChessGame()));
+        } catch (DataAccessException e) {
+            assertEquals("Failed to create game", e.getMessage());
         }
     }
 
@@ -144,6 +137,7 @@ public class SQLDAOTests {
                         "black",
                         "gameName",
                         new ChessGame()));
+
         var game = gameDao.getGame(1);
         assert game.gameID() == 1;
         assert game.whiteUsername().equals("white");
@@ -252,7 +246,7 @@ public class SQLDAOTests {
         try {
             authDao.createAuth(new AuthData("username", "authToken"));
         } catch (DataAccessException e) {
-            assertEquals("Duplicate entry 'authToken' for key 'authdata.PRIMARY'", e.getMessage());
+            assertEquals("Auth data already exists", e.getMessage());
         }
     }
 
