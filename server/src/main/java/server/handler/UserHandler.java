@@ -9,14 +9,19 @@ import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.UnauthorizedException;
 
+import request.user.LoginRequest;
+import request.user.LogoutRequest;
+import request.user.RegisterRequest;
+import server.response.exception.AlreadyTaken;
+import server.response.exception.BadRequest;
+import server.response.exception.Unauthorized;
+import server.response.user.LoginResult;
+import server.response.user.LogoutResult;
+import server.response.user.RegisterResult;
 import service.UserService;
 
 import spark.Request;
 import spark.Response;
-
-import server.request.user.*;
-import server.response.user.*;
-import server.response.exception.*;
 
 public class UserHandler {
     private final UserService userService;

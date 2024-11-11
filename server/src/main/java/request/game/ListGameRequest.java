@@ -1,3 +1,3 @@
-package server.request.game;
+package request.game;
 
 public record ListGameRequest(String authToken) {}

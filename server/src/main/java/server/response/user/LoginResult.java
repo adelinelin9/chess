@@ -10,3 +10,4 @@ public class LoginResult {
         return new Gson().toJson(authData);
     }
 }
+
