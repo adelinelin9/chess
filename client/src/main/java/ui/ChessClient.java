@@ -5,6 +5,7 @@ import static ui.EscapeSequences.*;
 import client.DrawBoard;
 import client.ResponseException;
 import client.State;
+import client.ServerFacade;
 
 import server.request.user.*;
 
