@@ -2,7 +2,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>server</artifactId>
+    <artifactId>client</artifactId>
     <version>1.0.0</version>
 
     <parent>
@@ -14,19 +14,14 @@
     <packaging>jar</packaging>
 
     <build>
-        <finalName>server</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
+        <finalName>client</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <mainClass>Main</mainClass>
+                    <mainClass>ServerMain</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -43,7 +38,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        Main
+                                        ServerMain
                                     </mainClass>
                                 </manifest>
                             </archive>
@@ -65,47 +60,21 @@
         </dependency>
         <dependency>
             <groupId>edu.byu.cs240</groupId>
-            <artifactId>shared</artifactId>
-            <version>1.0.0</version>
-            <type>test-jar</type>
+            <artifactId>server</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.30</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.9.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.tyrus.bundles</groupId>
             <artifactId>tyrus-standalone-client</artifactId>
             <version>1.15</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>edu.byu.cs240</groupId>
-            <artifactId>passoff-dependencies</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/passoff-dependencies.jar</systemPath>
+            <artifactId>server</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
-
     </dependencies>
-
-
 
 </project>
