@@ -3,7 +3,6 @@ package ui;
 import static ui.EscapeSequences.*;
 
 import client.DrawBoard;
-import client.ServerFacade;
 import client.ResponseException;
 import client.State;
 
