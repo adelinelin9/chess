@@ -41,26 +41,26 @@ function send(path, params, method) {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => {
-      status = response.status + ': ' + response.statusText + '\n';
-      return response.text();
-    })
-    .then((text) => {
-      if(text) return JSON.parse(text);
-      else return text;
-    })
-    .then((data) => {
-      if(data) {
-        document.getElementById('authToken').value = authToken = data.authToken || authToken;
-        gameID = data.gameID || gameID;
-      }
-      const response = (data === "") ? "Empty response body" : JSON.stringify(data, null, 2);
-      document.getElementById('response').innerText = status + "\n" + response;
-      scrollToId('responseBox');
-    })
-    .catch((error) => {
-      document.getElementById('response').innerText = error;
-    });
+      .then((response) => {
+        status = response.status + ': ' + response.statusText + '\n';
+        return response.text();
+      })
+      .then((text) => {
+        if(text) return JSON.parse(text);
+        else return text;
+      })
+      .then((data) => {
+        if(data) {
+          document.getElementById('authToken').value = authToken = data.authToken || authToken;
+          gameID = data.gameID || gameID;
+        }
+        const response = (data === "") ? "Empty response body" : JSON.stringify(data, null, 2);
+        document.getElementById('response').innerText = status + "\n" + response;
+        scrollToId('responseBox');
+      })
+      .catch((error) => {
+        document.getElementById('response').innerText = error;
+      });
 }
 
 function displayRequest(method, endpoint, request) {
