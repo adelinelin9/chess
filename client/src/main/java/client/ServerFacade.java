@@ -1,13 +1,12 @@
 package client;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import records.AuthData;
 import records.ListGameData;
 import server.request.game.CreateGameRequest;
 import server.request.game.JoinGameRequest;
-import server.request.user.*;
-import server.response.game.ListGamesResult;
+import server.request.user.LoginRequest;
+import server.request.user.RegisterRequest;
 
 import java.io.*;
 import java.net.*;
@@ -21,41 +20,120 @@ public class ServerFacade {
 
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL;
-        this.authToken = null;
+        authToken = null;
     }
 
-    public void register(RegisterRequest request) throws ResponseException {
-        var resp = this.makeRequest("POST", "/user", request, AuthData.class);
-        authToken = resp.authToken();
+    public String register(RegisterRequest request) throws ResponseException {
+        try {
+            var resp = this.makeRequest("POST", "/user", request, AuthData.class);
+            authToken = resp.authToken();
+        } catch (ResponseException e) {
+            if (e.statusCode() == 403) {
+                throw new ResponseException(403, "Username already taken");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
+        return authToken;
     }
 
-    public void login(LoginRequest request) throws ResponseException {
-        var resp = this.makeRequest("POST", "/session", request, AuthData.class);
-        authToken = resp.authToken();
+    public String login(LoginRequest request) throws ResponseException {
+        try {
+            var resp = this.makeRequest("POST", "/session", request, AuthData.class);
+            authToken = resp.authToken();
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "Username or password incorrect");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
+
+        return authToken;
     }
 
-    public void logout() throws ResponseException {
-        this.makeRequest("DELETE", "/session", null, null);
+    public Boolean logout() throws ResponseException {
+        try {
+            this.makeRequest("DELETE", "/session", null, null);
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "You are not logged in");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
+        return true;
     }
 
     public Collection<Map<String, Object>> listGames() throws ResponseException {
-        var resp = this.makeRequest("GET", "/game", null, ListGameData.class);
-        return resp.games();
+        try {
+            var resp = this.makeRequest("GET", "/game", null, ListGameData.class);
+            return resp.games();
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "You are not logged in");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
     }
 
-    public void createGame(String gameName) throws ResponseException {
-        CreateGameRequest request = new CreateGameRequest(authToken, gameName);
-        this.makeRequest("POST", "/game", request, null);
+    public Boolean createGame(String gameName) throws ResponseException {
+        try {
+            CreateGameRequest request = new CreateGameRequest(authToken, gameName);
+            this.makeRequest("POST", "/game", request, null);
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "You are not logged in");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
+        return true;
     }
 
-    public void joinGame(int gameID, String color) throws ResponseException {
-        JoinGameRequest request = new JoinGameRequest(authToken, color, gameID);
-        this.makeRequest("PUT", "/game", request, null);
+    public Boolean joinGame(int gameID, String color) throws ResponseException {
+        try {
+            JoinGameRequest request = new JoinGameRequest(authToken, color, gameID);
+            this.makeRequest("PUT", "/game", request, null);
+            return true;
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "You are not logged in");
+            }
+            else if (e.statusCode() == 403) {
+                throw new ResponseException(403, "Color already taken, or game is full");
+            }
+            else if (e.statusCode() == 400) {
+                throw new ResponseException(400, "Game not found, check id");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
     }
 
-    public void observeGame(int gameID) throws ResponseException {
-        JoinGameRequest request = new JoinGameRequest(authToken, "OBSERVE", gameID);
-        this.makeRequest("PUT", "/game", request, null);
+    public boolean observeGame(int gameID) throws ResponseException {
+        try {
+            JoinGameRequest request = new JoinGameRequest(authToken, "OBSERVE", gameID);
+            this.makeRequest("PUT", "/game", request, null);
+            return true;
+        } catch (ResponseException e) {
+            if (e.statusCode() == 401) {
+                throw new ResponseException(401, "You are not logged in");
+            }
+            else if (e.statusCode() == 400) {
+                throw new ResponseException(400, "Game not found, check id");
+            }
+            else {
+                throw new ResponseException(e.statusCode(), e.getMessage());
+            }
+        }
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -69,7 +147,9 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-        } catch (Exception ex) {
+        } catch (ResponseException e) {
+            throw new ResponseException(e.statusCode(), e.getMessage());
+        } catch (IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
@@ -89,7 +169,15 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws ResponseException, IOException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            if (status == 403) {
+                throw new ResponseException(403, "Already taken");
+            }
+            else if (status == 401) {
+                throw new ResponseException(401, "Unauthorized");
+            }
+            else if (status == 400) {
+                throw new ResponseException(400, "Bad request");
+            }
         }
     }
 

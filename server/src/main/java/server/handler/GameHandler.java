@@ -6,19 +6,15 @@ import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.UnauthorizedException;
 
-import request.game.CreateGameRequest;
-import request.game.JoinGameRequest;
-import request.game.ListGameRequest;
-import server.response.exception.AlreadyTaken;
-import server.response.exception.BadRequest;
-import server.response.exception.Unauthorized;
-import server.response.game.CreateGameResult;
-import server.response.game.JoinGameResult;
-import server.response.game.ListGamesResult;
 import service.GameService;
 
 import spark.Request;
 import spark.Response;
+
+import server.response.game.*;
+import server.response.exception.*;
+
+import server.request.game.*;
 
 import java.util.Map;
 import java.util.Collection;

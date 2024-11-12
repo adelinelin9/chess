@@ -1,75 +1,85 @@
-package server.handler;
+package server;
 
-import com.google.gson.Gson;
+import server.handler.*;
+import spark.*;
 
-import records.AuthData;
-import records.UserData;
+import service.*;
+import dataaccess.*;
 
-import dataaccess.AlreadyTakenException;
-import dataaccess.BadRequestException;
-import dataaccess.UnauthorizedException;
+import java.util.Objects;
 
-import request.user.LoginRequest;
-import request.user.LogoutRequest;
-import request.user.RegisterRequest;
-import server.response.exception.AlreadyTaken;
-import server.response.exception.BadRequest;
-import server.response.exception.Unauthorized;
-import server.response.user.LoginResult;
-import server.response.user.LogoutResult;
-import server.response.user.RegisterResult;
-import service.UserService;
+public class Server {
+    private UserHandler userHandler;
+    private GameHandler gameHandler;
+    private ClearHandler clearHandler;
 
-import spark.Request;
-import spark.Response;
+    private ClearService clearService;
 
-public class UserHandler {
-    private final UserService userService;
+    private void setHandlers(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+        GameService gameService = new GameService(gameDAO, authDAO);
+        UserService userService = new UserService(userDAO, authDAO);
+        clearService = new ClearService(userDAO, authDAO, gameDAO);
 
-    public UserHandler(UserService userService) {
-        this.userService = userService;
+        userHandler = new UserHandler(userService);
+        gameHandler = new GameHandler(gameService);
+        clearHandler = new ClearHandler(clearService);
     }
 
-    public Object register(Request req, Response resp) {
-        RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
-        UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+    private void initializeComponents(String service) {
+        if (Objects.equals(service, "Memory")) {
+            AuthDAO authDAO = new MemoryAuthDAO();
+            GameDAO gameDAO = new MemoryGameDAO();
+            UserDAO userDAO = new MemoryUserDAO();
 
-        try {
-            AuthData authData = userService.register(userData);
-            return RegisterResult.response(resp, authData);
+            setHandlers(authDAO, gameDAO, userDAO);
 
-        } catch (BadRequestException e) {
-            return BadRequest.response(resp);
+        } else if (Objects.equals(service, "SQL")) {
+            AuthDAO authDAO = new SQLAuthDAO();
+            GameDAO gameDAO = new SQLGameDAO();
+            UserDAO userDAO = new SQLUserDAO();
 
-        } catch (AlreadyTakenException e) {
-            return AlreadyTaken.response(resp);
-        }
-
-    }
-
-    public Object login(Request req, Response resp) {
-        LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
-
-        try {
-            AuthData authData = userService.login(loginRequest.username(), loginRequest.password());
-            return LoginResult.response(resp, authData);
-
-        } catch (UnauthorizedException | BadRequestException e) {
-            return Unauthorized.response(resp);
-        }
-
-    }
-
-    public Object logout(Request req, Response resp) {
-        LogoutRequest logoutRequest = new LogoutRequest(req.headers("Authorization"));
-
-        try {
-            userService.logout(logoutRequest.authToken());
-            return LogoutResult.response(resp);
-
-        } catch (UnauthorizedException e) {
-            return Unauthorized.response(resp);
+            setHandlers(authDAO, gameDAO, userDAO);
         }
     }
 
+    public Server() {
+        try {
+            initializeComponents("SQL");
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int run(int desiredPort) {
+        Spark.port(desiredPort);
+
+        Spark.staticFiles.location("web");
+
+        Spark.delete("/db", (req, resp) -> clearHandler.clear(resp));
+        Spark.post("/user", userHandler::register);
+        Spark.post("/session", userHandler::login);
+        Spark.delete("/session", userHandler::logout);
+
+        Spark.get("/game", gameHandler::listGames);
+        Spark.post("/game", gameHandler::createGame);
+        Spark.put("/game", gameHandler::joinGame);
+
+        Spark.init();
+
+        Spark.awaitInitialization();
+        return Spark.port();
+    }
+
+    public void stop() {
+        Spark.stop();
+        Spark.awaitStop();
+    }
+
+    public int port() {
+        return Spark.port();
+    }
+
+    public void clearDB() {
+        clearService.clear();
+    }
 }

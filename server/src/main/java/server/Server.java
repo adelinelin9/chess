@@ -8,7 +8,7 @@ import dataaccess.*;
 
 import java.util.Objects;
 
-public class ChessServer {
+public class Server {
     private UserHandler userHandler;
     private GameHandler gameHandler;
     private ClearHandler clearHandler;
@@ -40,7 +40,7 @@ public class ChessServer {
         }
     }
 
-    public ChessServer(String service) {
+    public Server(String service) {
         try {
             initializeComponents(service);
         } catch (RuntimeException e) {
