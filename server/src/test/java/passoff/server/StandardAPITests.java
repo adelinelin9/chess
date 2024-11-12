@@ -54,16 +54,16 @@ public class StandardAPITests {
         existingAuth = regResult.getAuthToken();
     }
 
-//    @Test
-//    @Order(1)
-//    @DisplayName("Static Files")
-//    public void staticFiles() throws Exception {
-//        String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
-//        Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-//                "Server response code was not 200 OK");
-//        Assertions.assertNotNull(htmlFromServer, "Server returned an empty file");
-//        Assertions.assertTrue(htmlFromServer.contains("CS 240 Chess Server Web API"));
-//    }
+    @Test
+    @Order(1)
+    @DisplayName("Static Files")
+    public void staticFiles() throws Exception {
+        String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
+        Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
+                "Server response code was not 200 OK");
+        Assertions.assertNotNull(htmlFromServer, "Server returned an empty file");
+        Assertions.assertTrue(htmlFromServer.contains("CS 240 Chess Server Web API"));
+    }
 
     @Test
     @Order(2)
