@@ -13,10 +13,12 @@ public class Server {
     private GameHandler gameHandler;
     private ClearHandler clearHandler;
 
-    private void _initializeComponents(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+    private ClearService clearService;
+
+    private void setHandlers(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         GameService gameService = new GameService(gameDAO, authDAO);
         UserService userService = new UserService(userDAO, authDAO);
-        ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+        clearService = new ClearService(userDAO, authDAO, gameDAO);
 
         userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
@@ -29,20 +31,20 @@ public class Server {
             GameDAO gameDAO = new MemoryGameDAO();
             UserDAO userDAO = new MemoryUserDAO();
 
-            _initializeComponents(authDAO, gameDAO, userDAO);
+            setHandlers(authDAO, gameDAO, userDAO);
 
         } else if (Objects.equals(service, "SQL")) {
             AuthDAO authDAO = new SQLAuthDAO();
             GameDAO gameDAO = new SQLGameDAO();
             UserDAO userDAO = new SQLUserDAO();
 
-            _initializeComponents(authDAO, gameDAO, userDAO);
+            setHandlers(authDAO, gameDAO, userDAO);
         }
     }
 
-    public Server(String service) {
+    public Server() {
         try {
-            initializeComponents(service);
+            initializeComponents("SQL");
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -75,5 +77,9 @@ public class Server {
 
     public int port() {
         return Spark.port();
+    }
+
+    public void clearDB() {
+        clearService.clear();
     }
 }
