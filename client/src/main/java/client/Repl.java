@@ -1,6 +1,6 @@
 //package client;
 //
-//import ui.ChessClient;
+//import client.ChessClient;
 //
 //import java.util.Scanner;
 //
@@ -42,8 +42,6 @@
 //}
 
 package client;
-
-import ui.ChessClient;
 
 import java.util.Scanner;
 
