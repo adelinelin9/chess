@@ -55,6 +55,8 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/connect", WebsocketHandler.class);
+
         Spark.delete("/db", (req, resp) -> clearHandler.clear(resp));
         Spark.post("/user", userHandler::register);
         Spark.post("/session", userHandler::login);
@@ -63,6 +65,7 @@ public class Server {
         Spark.get("/game", gameHandler::listGames);
         Spark.post("/game", gameHandler::createGame);
         Spark.put("/game", gameHandler::joinGame);
+        Spark.delete("/game", gameHandler::leaveGame);
 
         Spark.init();
 
