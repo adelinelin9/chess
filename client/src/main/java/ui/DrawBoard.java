@@ -2,7 +2,6 @@ package ui;
 
 import chess.*;
 import client.ResponseException;
-import dataaccess.BadRequestException;
 
 import java.util.Collection;
 
@@ -30,13 +29,20 @@ public class DrawBoard {
                     ChessPiece piece = chessBoard.getPiece(new ChessPosition(i + 1, 8 - j));
                     String pieceColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? RED : BLUE;
                     String pieceType =
-                            piece.getPieceType() == PAWN ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN)) :
-                                    piece.getPieceType() == ROOK ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_ROOK : BLACK_ROOK)) :
-                                            piece.getPieceType() == KNIGHT ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT)) :
-                                                    piece.getPieceType() == BISHOP ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_BISHOP : BLACK_BISHOP)) :
-                                                            piece.getPieceType() == QUEEN ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN)) :
-                                                                    piece.getPieceType() == KING ? (pieceColor + (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING)) : "";
-                    board[i][j] = (isWhite ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK) + BOLD + pieceType + RESET_BOLD_FAINT + RESET_BG_COLOR;
+                            piece.getPieceType() == PAWN ? (pieceColor + (piece.getTeamColor() ==
+                                    ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN)) :
+                                    piece.getPieceType() == ROOK ? (pieceColor + (piece.getTeamColor() ==
+                                            ChessGame.TeamColor.WHITE ? WHITE_ROOK : BLACK_ROOK)) :
+                                            piece.getPieceType() == KNIGHT ? (pieceColor + (piece.getTeamColor() ==
+                                                    ChessGame.TeamColor.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT)) :
+                                                    piece.getPieceType() == BISHOP ? (pieceColor + (piece.getTeamColor() ==
+                                                            ChessGame.TeamColor.WHITE ? WHITE_BISHOP : BLACK_BISHOP)) :
+                                                            piece.getPieceType() == QUEEN ? (pieceColor + (piece.getTeamColor() ==
+                                                                    ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN)) :
+                                                                    piece.getPieceType() == KING ? (pieceColor + (piece.getTeamColor() ==
+                                                                            ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING)) : "";
+                    board[i][j] = (isWhite ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK) +
+                            BOLD + pieceType + RESET_BOLD_FAINT + RESET_BG_COLOR;
 
                 }
                 isWhite = !isWhite;
@@ -99,7 +105,7 @@ public class DrawBoard {
         return boardString.toString();
     }
 
-    public static String highlightMoves(ChessGame game, ChessPosition pos) throws ResponseException {
+    public static String highlightMoves(ChessGame game, ChessPosition pos, ChessGame.TeamColor color) throws ResponseException {
         highlight = true;
 
         ChessPiece piece = game.getBoard().getPiece(pos);
@@ -108,16 +114,16 @@ public class DrawBoard {
             throw new ResponseException(400, "No piece at position " + (char) (pos.getColumn() + 96) + pos.getRow());
         }
 
-        if (piece.getTeamColor() != game.getTeamTurn()) {
-            throw new ResponseException(400, "Requested piece is not on your team");
-        }
-
         Collection<ChessMove> moves = game.validMoves(pos);
         for (ChessMove move : moves) {
             ChessPosition endPos = move.getEndPosition();
-            board[endPos.getRow() - 1][7 - (endPos.getColumn() - 1)] = SET_BG_COLOR_GREEN + "   " + RESET_BG_COLOR;
+            board[endPos.getRow() - 1][7 - (endPos.getColumn() - 1)] = SET_BG_COLOR_GREEN + FAINT + FAINT + "   " + RESET_BG_COLOR;
         }
 
-        return piece.getTeamColor() == ChessGame.TeamColor.WHITE ? getWhitePerspective(game) : getBlackPerspective(game);
+        if (color == ChessGame.TeamColor.BLACK) {
+            return getBlackPerspective(game);
+        } else {
+            return getWhitePerspective(game);
+        }
     }
 }
