@@ -12,6 +12,7 @@ import records.GameData;
 
 import org.eclipse.jetty.websocket.api.annotations.*;
 import server.Server;
+import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MoveCommand;
 import websocket.commands.ResignCommand;
