@@ -1,14 +1,14 @@
-//package server.handler;
-//
-//import chess.ChessGame;
-//import chess.InvalidMoveException;
-//import com.google.gson.Gson;
-//import dataaccess.BadRequestException;
-//import dataaccess.UnauthorizedException;
-//import org.eclipse.jetty.websocket.api.Session;
-//
-//import records.AuthData;
-//import records.GameData;
+package server.handler;
+
+import chess.ChessGame;
+import chess.InvalidMoveException;
+import com.google.gson.Gson;
+import dataaccess.BadRequestException;
+import dataaccess.UnauthorizedException;
+import org.eclipse.jetty.websocket.api.Session;
+
+import records.AuthData;
+import records.GameData;
 
 import org.eclipse.jetty.websocket.api.annotations.*;
 import server.Server;
