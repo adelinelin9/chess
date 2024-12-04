@@ -13,7 +13,45 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//public class 
+public class SQLDAOTests {
+
+    SQLAuthDAO authDao = new SQLAuthDAO();
+    SQLGameDAO gameDao = new SQLGameDAO();
+    SQLUserDAO userDao = new SQLUserDAO();
+
+    @BeforeEach
+    public void setup() throws DataAccessException {
+        DatabaseManager.createDatabase();
+    }
+
+    @AfterEach
+    public void tearDown() throws DataAccessException, SQLException {
+        userDao.clear();
+        gameDao.clear();
+        authDao.clear();
+        DatabaseManager.getConnection().close();
+    }
+
+    @Test
+    public void testCreateUserPositive() throws DataAccessException {
+        userDao.createUser(new UserData("username", "password", "email"));
+
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var statement = connection.prepareStatement(
+                    "SELECT * FROM UserData WHERE username = ?")) {
+                statement.setString(1, "username");
+                try (var resultSet = statement.executeQuery()) {
+                    resultSet.next();
+                    assert resultSet.getString("username").equals("username");
+                    assert BCrypt.checkpw("password", resultSet.getString("password"));
+                    assert resultSet.getString("email").equals("email");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("User already exists");
+        }
+    }
+
     @Test
     public void testCreateUserNegative() throws DataAccessException {
         userDao.createUser(new UserData("username", "password", "email"));
