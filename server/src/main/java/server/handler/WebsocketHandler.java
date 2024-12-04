@@ -165,7 +165,7 @@ public class WebsocketHandler {
                 broadcastMessage(command.getAuthToken(), notification);
 
             } else {
-                Notification notification = new Notification("%s moved from %s to %s".formatted(authData.username(), command.getMove().getStartPosition(),command.getMove().getEndPosition()));
+                Notification notification = new Notification("%s has made a move".formatted(authData.username()));
                 broadcastMessage(command.getAuthToken(), notification);
             }
 
