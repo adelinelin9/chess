@@ -90,7 +90,7 @@ public class WebsocketHandler {
             GameData gameData = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
             ChessGame.TeamColor playerColor = getPlayerColor(authData.username(), gameData);
 
-            sendNotification(command.getAuthToken(), authData.username(), playerColor);
+            sendNotification(command.getAuthToken(), authData.username(), "joined", playerColor);
 
             LoadGame loadGame = new LoadGame(gameData.game());
             sendMessage(session, loadGame);
@@ -108,7 +108,7 @@ public class WebsocketHandler {
             GameData gameData = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
             ChessGame.TeamColor playerColor = getPlayerColor(authData.username(), gameData);
 
-            sendNotification(command.getAuthToken(), authData.username(), playerColor);
+            sendNotification(command.getAuthToken(), authData.username(), "left", playerColor);
             Server.gameService.leaveGame(command.getAuthToken(), playerColor, command.getGameID());
 
         } catch (UnauthorizedException | BadRequestException e) {
@@ -116,12 +116,12 @@ public class WebsocketHandler {
         }
     }
 
-    private void sendNotification(String authToken, String username, ChessGame.TeamColor playerColor) throws IOException {
+    private void sendNotification(String authToken, String username, String state, ChessGame.TeamColor playerColor) throws IOException {
         Notification notification;
         if (playerColor == null) {
-            notification = new Notification("Observer %s has connected to the game".formatted(username));
+            notification = new Notification("Observer %s has %s to the game".formatted(username, state));
         } else {
-            notification = new Notification("Player %s has connected to the game".formatted(username));
+            notification = new Notification("Player %s has %s to the game".formatted(username, state));
         }
         broadcastMessage(authToken, notification);
     }
@@ -165,7 +165,8 @@ public class WebsocketHandler {
                 broadcastMessage(command.getAuthToken(), notification);
 
             } else {
-                Notification notification = new Notification("%s has made a move".formatted(authData.username()));
+                Notification notification = new Notification("%s has made a move to %s".formatted(authData.username(),
+                        command.getMove()));
                 broadcastMessage(command.getAuthToken(), notification);
             }
 
