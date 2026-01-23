@@ -241,4 +241,9 @@ public class ChessGame {
         ChessGame chessGame = (ChessGame) o;
         return currentTurn == chessGame.currentTurn && Objects.equals(board, chessGame.board);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTurn, board);
+    }
 }
