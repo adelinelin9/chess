@@ -20,7 +20,7 @@ public class ChessGame {
     private boolean whiteRookRMoved = false;
     private boolean blackRookLMoved = false;
     private boolean blackRookRMoved = false;
-    private ChessPosition enPassantSquae = null;
+    private ChessPosition enPassantSquare = null;
 
     public ChessGame() {
         this.board = new ChessBoard();
@@ -75,9 +75,17 @@ public class ChessGame {
                 validMoves.add(move);
             }
         }
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            addCastlingMoves(startPosition, piece.getTeamColor(), validMoves);
+        }
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            addEnPassantMoves(startPosition, piece.getTeamColor(), validMoves);
+        }
 
         return validMoves;
     }
+
+    
 
     /**
      * Makes a move in a chess game
