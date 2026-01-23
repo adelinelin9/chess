@@ -2,7 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.ArrayList;
-//import java.util.Objects;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -17,7 +17,7 @@ public class ChessGame {
     public ChessGame() {
         this.board = new ChessBoard();
         this.currentTurn = TeamColor.WHITE;
-        //this.board.resetBoard();
+        this.board.resetBoard();
 
     }
 
