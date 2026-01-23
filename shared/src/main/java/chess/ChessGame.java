@@ -14,6 +14,14 @@ public class ChessGame {
     private TeamColor currentTurn;
     private ChessBoard board;
 
+    private boolean whiteKingMoved = false;
+    private boolean blackKingMoved = false;
+    private boolean whiteRookLMoved = false;
+    private boolean whiteRookRMoved = false;
+    private boolean blackRookLMoved = false;
+    private boolean blackRookRMoved = false;
+    private ChessPosition enPassantSquae = null;
+
     public ChessGame() {
         this.board = new ChessBoard();
         this.currentTurn = TeamColor.WHITE;
