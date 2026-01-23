@@ -85,7 +85,70 @@ public class ChessGame {
         return validMoves;
     }
 
+    private void addCastlingMoves(ChessPosition kingPos, TeamColor color, ArrayList<ChessMove> moves) {
+        if (isInCheck(color)) {
+            return;
+        }
+
+        int row = (color == TeamColor.WHITE) ? 1 : 8;
+        boolean kingMoved = (color == TeamColor.WHITE) ? whiteKingMoved : blackKingMoved;
+
+        if (kingMoved || kingPos.getRow() != row || kingPos.getColumn() != 5) {
+            return;
+        }
+
+        boolean rookHMoved = (color == TeamColor.WHITE) ? whiteRookRMoved : blackRookRMoved;
+        if (!rookHMoved) {
+            ChessPosition rookPos = new ChessPosition(row, 8);
+            ChessPiece rook = board.getPiece(rookPos);
+            if (rook != null && rook.getPieceType() == ChessPiece.PieceType.ROOK && rook.getTeamColor() == color) {
+                if (board.getPiece(new ChessPosition(row, 6)) == null &&
+                        board.getPiece(new ChessPosition(row, 7)) == null) {
+                    if (!isSquareAttacked(new ChessPosition(row, 6), color) &&
+                            !isSquareAttacked(new ChessPosition(row, 7), color)) {
+                        moves.add(new ChessMove(kingPos, new ChessPosition(row, 7), null));
+                    }
+                }
+            }
+        }
+
+        boolean rookAMoved = (color == TeamColor.WHITE) ? whiteRookLMoved : blackRookLMoved;
+        if (!rookAMoved) {
+            ChessPosition rookPos = new ChessPosition(row, 1);
+            ChessPiece rook = board.getPiece(rookPos);
+            if (rook != null && rook.getPieceType() == ChessPiece.PieceType.ROOK && rook.getTeamColor() == color) {
+                if (board.getPiece(new ChessPosition(row, 2)) == null &&
+                        board.getPiece(new ChessPosition(row, 3)) == null &&
+                        board.getPiece(new ChessPosition(row, 4)) == null) {
+                    if (!isSquareAttacked(new ChessPosition(row, 4), color) &&
+                            !isSquareAttacked(new ChessPosition(row, 3), color)) {
+                        moves.add(new ChessMove(kingPos, new ChessPosition(row, 3), null));
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isSquareAttacked(ChessPosition square, TeamColor friendlyColor) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() != friendlyColor) {
+                    Collection<ChessMove> pieceMoves = piece.pieceMoves(board, pos);
+                    for (ChessMove move : pieceMoves) {
+                        if (move.getEndPosition().equals(square)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     
+
 
     /**
      * Makes a move in a chess game
