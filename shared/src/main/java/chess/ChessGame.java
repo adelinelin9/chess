@@ -147,7 +147,17 @@ public class ChessGame {
         return false;
     }
 
-    
+    private void addEnPassantMoves(ChessPosition pawnPos, TeamColor color, ArrayList<ChessMove> moves) {
+        if (enPassantSquare == null) {
+            return;
+        }
+
+        int direction = (color == TeamColor.WHITE) ? 1 : -1;
+        int expectedRow = (color == TeamColor.WHITE) ? 5 : 4;
+
+        if (pawnPos.getRow() != expectedRow) {
+            return;
+        }
 
 
     /**
