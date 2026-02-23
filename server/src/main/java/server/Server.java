@@ -18,12 +18,24 @@ import java.util.List;
 public class Server {
 
     private final Javalin javalin;
+    private final MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private final UserService userService = new UserService(userDAO, authDAO);
+    private final GameService gameService = new GameService(gameDAO, authDAO);
+    private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+    private final Gson gson = new Gson();
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        // Register your endpoints and exception handlers here.
-
+        javalin.delete("/db", this::clear);
+        javalin.post("/user", this::register);
+        javalin.post("/session", this::login);
+        javalin.delete("/session", this::logout);
+        javalin.get("/game", this::listGames);
+        javalin.post("/game", this::createGame);
+        javalin.put("/game", this::joinGame);
     }
 
     public int run(int desiredPort) {
@@ -33,5 +45,10 @@ public class Server {
 
     public void stop() {
         javalin.stop();
+    }
+
+    private void clear(Context ctx) {
+        clearService.clear();
+        ctx.status(200).result("{}").contentType("application/json");
     }
 }
