@@ -94,7 +94,82 @@ public class Server {
             sendError(ctx, 401, "unauthorized");
         }
     }
+    private void listGames(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            List<GameData> games = gameService.listGames(authToken);
 
-    
+            var entries = new ArrayList<GameEntry>();
+            for (var g : games) {
+                entries.add(new GameEntry(g.gameID(), g.gameName(), g.whiteUsername(), g.blackUsername()));
+            }
+
+            var response = new HashMap<String, Object>();
+            response.put("games", entries);
+            ctx.status(200).result(gson.toJson(response)).contentType("application/json");
+        } catch (DataAccessException e) {
+            sendError(ctx, 401, "unauthorized");
+        }
+    }
+
+    private void createGame(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            var req = gson.fromJson(ctx.body(), CreateGameReq.class);
+            if (req == null || req.gameName() == null) {
+                sendError(ctx, 400, "bad request");
+                return;
+            }
+            int gameID = gameService.createGame(authToken, req.gameName());
+            var response = new HashMap<String, Object>();
+            response.put("gameID", gameID);
+            ctx.status(200).result(gson.toJson(response)).contentType("application/json");
+        } catch (DataAccessException e) {
+            sendError(ctx, 401, "unauthorized");
+        }
+    }
+
+    private void joinGame(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            var req = gson.fromJson(ctx.body(), JoinGameReq.class);
+
+            if (req == null || req.playerColor() == null || req.gameID() == null) {
+                sendError(ctx, 400, "bad request");
+                return;
+            }
+            if (!req.playerColor().equals("WHITE") && !req.playerColor().equals("BLACK")) {
+                sendError(ctx, 400, "bad request");
+                return;
+            }
+
+            gameService.joinGame(authToken, req.playerColor(), req.gameID());
+            ctx.status(200).result("{}").contentType("application/json");
+        } catch (DataAccessException e) {
+            if (e.getMessage().contains("already taken")) {
+                sendError(ctx, 403, "already taken");
+            } else if (e.getMessage().contains("unauthorized")) {
+                sendError(ctx, 401, "unauthorized");
+            } else {
+                sendError(ctx, 400, "bad request");
+            }
+        }
+    }
+
+    private void sendError(Context ctx, int status, String message) {
+        var response = new HashMap<String, String>();
+        response.put("message", "Error: " + message);
+        ctx.status(status).result(gson.toJson(response)).contentType("application/json");
+    }
+
+    // request/response helper records
+    private record RegisterReq(String username, String password, String email) {}
+    private record LoginReq(String username, String password) {}
+    private record CreateGameReq(String gameName) {}
+    private record JoinGameReq(String playerColor, Integer gameID) {}
+    private record AuthResp(String username, String authToken) {}
+    private record GameEntry(int gameID, String gameName, String whiteUsername, String blackUsername) {}
+
+
 }
 
