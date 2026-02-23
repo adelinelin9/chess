@@ -71,6 +71,30 @@ public class Server {
         }
     }
 
+    private void login(Context ctx) {
+        try {
+            var req = gson.fromJson(ctx.body(), LoginReq.class);
+            if (req == null || req.username() == null || req.password() == null) {
+                sendError(ctx, 400, "bad request");
+                return;
+            }
+            AuthData auth = userService.login(req.username(), req.password());
+            ctx.status(200).result(gson.toJson(new AuthResp(auth.username(), auth.authToken()))).contentType("application/json");
+        } catch (DataAccessException e) {
+            sendError(ctx, 401, "unauthorized");
+        }
+    }
+
+    private void logout(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            userService.logout(authToken);
+            ctx.status(200).result("{}").contentType("application/json");
+        } catch (DataAccessException e) {
+            sendError(ctx, 401, "unauthorized");
+        }
+    }
+
     
 }
 
