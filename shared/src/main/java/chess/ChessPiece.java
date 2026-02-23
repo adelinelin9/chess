@@ -156,7 +156,9 @@ public class ChessPiece {
             row += rowDir;
             col += colDir;
 
-            if (!isInBounds(row, col)) break;
+            if (!isInBounds(row, col)) {
+                break;
+            }
 
             ChessPosition newPos = new ChessPosition(row, col);
             ChessPiece target = board.getPiece(newPos);
@@ -192,8 +194,12 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessPiece that = (ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }
