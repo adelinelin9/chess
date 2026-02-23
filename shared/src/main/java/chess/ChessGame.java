@@ -1,7 +1,7 @@
 package chess;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -16,9 +16,8 @@ public class ChessGame {
 
     public ChessGame() {
         this.board = new ChessBoard();
-        this.currentTurn = TeamColor.WHITE;
         this.board.resetBoard();
-
+        this.currentTurn = TeamColor.WHITE;
     }
 
     /**
@@ -34,7 +33,6 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-
         this.currentTurn = team;
     }
 
@@ -60,7 +58,7 @@ public class ChessGame {
         }
 
         Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
-        ArrayList<ChessMove> validMoves = new ArrayList <>();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
             if (!wouldLeaveKingInCheck(move, piece.getTeamColor())) {
@@ -115,16 +113,23 @@ public class ChessGame {
                 ChessPiece piece = board.getPiece(pos);
 
                 if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(board, pos);
-                    for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPos)) {
-                            return true;
-                        }
+                    if (canPieceAttackPosition(piece, pos, kingPos)) {
+                        return true;
                     }
                 }
             }
         }
 
+        return false;
+    }
+
+    private boolean canPieceAttackPosition(ChessPiece piece, ChessPosition pos, ChessPosition target) {
+        Collection<ChessMove> moves = piece.pieceMoves(board, pos);
+        for (ChessMove move : moves) {
+            if (move.getEndPosition().equals(target)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -153,6 +158,7 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
+
         return hasNoValidMoves(teamColor);
     }
 
@@ -173,6 +179,7 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
     private ChessPosition findKing(TeamColor color) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
@@ -235,13 +242,9 @@ public class ChessGame {
     }
 
     @Override
-    public boolean equals (Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() !=o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         ChessGame chessGame = (ChessGame) o;
         return currentTurn == chessGame.currentTurn && Objects.equals(board, chessGame.board);
     }
