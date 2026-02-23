@@ -14,6 +14,7 @@ import service.UserService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import io.javalin.http.Context;
 
 public class Server {
 
@@ -51,4 +52,25 @@ public class Server {
         clearService.clear();
         ctx.status(200).result("{}").contentType("application/json");
     }
+
+    private void register(Context ctx) {
+        try {
+            var req = gson.fromJson(ctx.body(), RegisterReq.class);
+            if (req == null || req.username() == null || req.password() == null || req.email() == null) {
+                sendError(ctx, 400, "bad request");
+                return;
+            }
+            AuthData auth = userService.register(req.username(), req.password(), req.email());
+            ctx.status(200).result(gson.toJson(new AuthResp(auth.username(), auth.authToken()))).contentType("application/json");
+        } catch (DataAccessException e) {
+            if (e.getMessage().contains("already taken")) {
+                sendError(ctx, 403, "already taken");
+            } else {
+                sendError(ctx, 400, "bad request");
+            }
+        }
+    }
+
+    
 }
+
