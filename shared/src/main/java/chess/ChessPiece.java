@@ -34,14 +34,14 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor teamColor() {
+    public ChessGame.TeamColor getTeamColor() {
         return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
-    public PieceType pieceType() {
+    public PieceType getPieceType() {
         return type; 
     }
 
@@ -130,7 +130,7 @@ public class ChessPiece {
             if (inBounds(newRow, newCol)) {
                 ChessPosition capturePos = new ChessPosition(newRow, newCol);
                 ChessPiece target = board.getPiece(capturePos);
-                if (target != null && target.teamColor() != pieceColor) {
+                if (target != null && target.getTeamColor() != pieceColor) {
                     if (newRow == promotionRow) {
                         promotionMoves(myPosition, capturePos, moves);
                     } else {
@@ -166,7 +166,7 @@ public class ChessPiece {
             if (target == null) {
                 moves.add(new ChessMove(myPosition, newPos, null));
             } else {
-                if (target.teamColor() != pieceColor) {
+                if (target.getTeamColor() != pieceColor) {
                     moves.add(new ChessMove(myPosition, newPos, null));
                 }
                 break;
@@ -182,7 +182,7 @@ public class ChessPiece {
             ChessPosition newPos = new ChessPosition(newRow, newCol);
             ChessPiece target = board.getPiece(newPos);
 
-            if (target == null || target.teamColor() != pieceColor) {
+            if (target == null || target.getTeamColor() != pieceColor) {
                 moves.add(new ChessMove(myPosition, newPos, null));
             }
         }

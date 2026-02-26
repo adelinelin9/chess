@@ -45,9 +45,9 @@ public class ChessBoardTests extends EqualsTestingUtility<ChessBoard> {
         ChessPiece foundPiece = board.getPiece(position);
 
         Assertions.assertNotNull(foundPiece, "getPiece returned null for a position just added");
-        Assertions.assertEquals(piece.pieceType(), foundPiece.pieceType(),
+        Assertions.assertEquals(piece.getPieceType(), foundPiece.getPieceType(),
                 "ChessPiece returned by getPiece had the wrong piece type");
-        Assertions.assertEquals(piece.teamColor(), foundPiece.teamColor(),
+        Assertions.assertEquals(piece.getTeamColor(), foundPiece.getTeamColor(),
                 "ChessPiece returned by getPiece had the wrong team color");
     }
 
