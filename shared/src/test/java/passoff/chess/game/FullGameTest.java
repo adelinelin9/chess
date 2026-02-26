@@ -90,11 +90,11 @@ public class FullGameTest {
                 |P|P|P|P| |P|P|P|
                 |R|N|B| |K| |N|R|
          */
-        Assertions.assertTrue(game.inCheck(ChessGame.TeamColor.BLACK), GameStatusTests.MISSING_BLACK_CHECK);
-        Assertions.assertFalse(game.inCheck(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_CHECK);
-        Assertions.assertTrue(game.inCheckmate(ChessGame.TeamColor.BLACK), GameStatusTests.MISSING_BLACK_CHECKMATE);
-        Assertions.assertFalse(game.inCheckmate(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_CHECKMATE);
-        Assertions.assertFalse(game.inStalemate(ChessGame.TeamColor.BLACK), GameStatusTests.INCORRECT_BLACK_STALEMATE);
-        Assertions.assertFalse(game.inStalemate(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_STALEMATE);
+        Assertions.assertTrue(game.isInCheck(ChessGame.TeamColor.BLACK), GameStatusTests.MISSING_BLACK_CHECK);
+        Assertions.assertFalse(game.isInCheck(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_CHECK);
+        Assertions.assertTrue(game.isInCheckmate(ChessGame.TeamColor.BLACK), GameStatusTests.MISSING_BLACK_CHECKMATE);
+        Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_CHECKMATE);
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK), GameStatusTests.INCORRECT_BLACK_STALEMATE);
+        Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.WHITE), GameStatusTests.INCORRECT_WHITE_STALEMATE);
     }
 }
