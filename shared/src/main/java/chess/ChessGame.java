@@ -101,7 +101,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean inCheck(TeamColor teamColor) {
+    public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPos = findKing(teamColor);
         if (kingPos == null) {
             return false;
@@ -139,8 +139,8 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean inCheckmate(TeamColor teamColor) {
-        if (!inCheck(teamColor)) {
+    public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
             return false;
         }
 
@@ -154,8 +154,8 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean inStalemate(TeamColor teamColor) {
-        if (inCheck(teamColor)) {
+    public boolean isInStalemate(TeamColor teamColor) {
+        if (isInCheck(teamColor)) {
             return false;
         }
 
@@ -200,7 +200,7 @@ public class ChessGame {
 
         executeMove(move);
 
-        boolean inCheck = inCheck(teamColor);
+        boolean inCheck = isInCheck(teamColor);
 
         undoMove(move, piece, captured);
 
