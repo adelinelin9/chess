@@ -3,7 +3,7 @@ package dataaccess;
 import model.UserData;
 import java.util.HashMap;
 
-public class MemoryUserDAO {
+public class MemoryUserDAO implements UserDAO {
     private HashMap<String, UserData> users = new HashMap<>();
 
     public void createUser(UserData user) throws DataAccessException {
@@ -13,11 +13,11 @@ public class MemoryUserDAO {
         users.put(user.username(), user);
     }
 
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException {
         return users.get(username);
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         users.clear();
     }
 }
