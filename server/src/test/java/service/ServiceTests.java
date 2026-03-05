@@ -1,20 +1,21 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
+
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTests {
-    private MemoryUserDAO userDAO;
-    private MemoryAuthDAO authDAO;
-    private MemoryGameDAO gameDAO;
+
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
     private UserService userService;
     private GameService gameService;
     private ClearService clearService;
@@ -82,15 +83,16 @@ public class ServiceTests {
             assertNotNull(e.getMessage());
         }
     }
+
     @Test
-    public void testCreateSuccess() throws DataAccessException {
+    public void testCreateGameSuccess() throws DataAccessException {
         AuthData auth = userService.register("dave", "pass", "dave@email.com");
         int gameID = gameService.createGame(auth.authToken(), "mygame");
         assertTrue(gameID > 0);
     }
 
     @Test
-    public void testCreateFail() {
+    public void testCreateGameFail() {
         try {
             gameService.createGame("badtoken", "mygame");
             fail("Should have thrown an exception");
@@ -98,8 +100,9 @@ public class ServiceTests {
             assertNotNull(e.getMessage());
         }
     }
+
     @Test
-    public void testListSuccess() throws DataAccessException {
+    public void testListGamesSuccess() throws DataAccessException {
         AuthData auth = userService.register("eve", "pass", "eve@email.com");
         gameService.createGame(auth.authToken(), "game1");
         gameService.createGame(auth.authToken(), "game2");
@@ -108,7 +111,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testListFail() {
+    public void testListGamesFail() {
         try {
             gameService.listGames("badtoken");
             fail("Should have thrown an exception");
@@ -116,8 +119,9 @@ public class ServiceTests {
             assertNotNull(e.getMessage());
         }
     }
+
     @Test
-    public void testJoinSuccess() throws DataAccessException {
+    public void testJoinGameSuccess() throws DataAccessException {
         AuthData auth = userService.register("frank", "pass", "frank@email.com");
         int gameID = gameService.createGame(auth.authToken(), "testgame");
         gameService.joinGame(auth.authToken(), "WHITE", gameID);
@@ -126,7 +130,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testJoinFail() throws DataAccessException {
+    public void testJoinGameFail() throws DataAccessException {
         AuthData auth1 = userService.register("grace", "pass", "grace@email.com");
         AuthData auth2 = userService.register("henry", "pass", "henry@email.com");
         int gameID = gameService.createGame(auth1.authToken(), "testgame");
@@ -138,6 +142,7 @@ public class ServiceTests {
             assertEquals("already taken", e.getMessage());
         }
     }
+
     @Test
     public void testClearSuccess() throws DataAccessException {
         AuthData auth = userService.register("ivan", "pass", "ivan@email.com");
@@ -152,7 +157,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testClearLetReregister() throws DataAccessException {
+    public void testClearAllowsReregister() throws DataAccessException {
         userService.register("judy", "pass", "judy@email.com");
         clearService.clear();
         AuthData auth = userService.register("judy", "pass", "judy@email.com");
