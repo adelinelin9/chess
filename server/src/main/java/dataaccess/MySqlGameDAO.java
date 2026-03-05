@@ -43,8 +43,8 @@ public class MySqlGameDAO implements GameDAO {
         String sql = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, null);
-            stmt.setString(2, null);
+            stmt.setString(1, "");
+            stmt.setString(2, "");
             stmt.setString(3, gameName);
             stmt.setString(4, gson.toJson(new ChessGame()));
             stmt.executeUpdate();
@@ -68,13 +68,15 @@ public class MySqlGameDAO implements GameDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     ChessGame game = gson.fromJson(rs.getString("game"), ChessGame.class);
-                    return new GameData(
-                            rs.getInt("gameID"),
-                            rs.getString("whiteUsername"),
-                            rs.getString("blackUsername"),
-                            rs.getString("gameName"),
-                            game
-                    );
+                    String white = rs.getString("whiteUsername");
+                    String black = rs.getString("blackUsername");
+                    if (white != null && white.isEmpty()) {
+                        white = null;
+                    }
+                    if (black != null && black.isEmpty()) {
+                        black = null;
+                    }
+                    return new GameData(rs.getInt("gameID"), white, black, rs.getString("gameName"), game);
                 }
             }
         } catch (SQLException e) {
@@ -92,13 +94,15 @@ public class MySqlGameDAO implements GameDAO {
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 ChessGame game = gson.fromJson(rs.getString("game"), ChessGame.class);
-                games.add(new GameData(
-                        rs.getInt("gameID"),
-                        rs.getString("whiteUsername"),
-                        rs.getString("blackUsername"),
-                        rs.getString("gameName"),
-                        game
-                ));
+                String white = rs.getString("whiteUsername");
+                String black = rs.getString("blackUsername");
+                if (white != null && white.isEmpty()) {
+                    white = null;
+                }
+                if (black != null && black.isEmpty()) {
+                    black = null;
+                }
+                games.add(new GameData(rs.getInt("gameID"), white, black, rs.getString("gameName"), game));
             }
         } catch (SQLException e) {
             throw new DataAccessException("failed to list games: " + e.getMessage());
@@ -111,8 +115,16 @@ public class MySqlGameDAO implements GameDAO {
         String sql = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, game.whiteUsername());
-            stmt.setString(2, game.blackUsername());
+            String white = game.whiteUsername();
+            String black = game.blackUsername();
+            if (white == null) {
+                white = "";
+            }
+            if (black == null) {
+                black = "";
+            }
+            stmt.setString(1, white);
+            stmt.setString(2, black);
             stmt.setString(3, game.gameName());
             stmt.setString(4, gson.toJson(game.game()));
             stmt.setInt(5, game.gameID());
