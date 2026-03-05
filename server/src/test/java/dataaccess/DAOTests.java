@@ -29,7 +29,7 @@ public class DAOTests {
     // ---- MySqlUserDAO tests ----
 
     @Test
-    public void testCreateUserSuccess() throws DataAccessException {
+    public void createUser() throws DataAccessException {
         UserData user = new UserData("alice", "password123", "alice@email.com");
         userDAO.createUser(user);
         UserData result = userDAO.getUser("alice");
@@ -37,7 +37,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testCreateUserFail() throws DataAccessException {
+    public void createUserDuplicate() throws DataAccessException {
         UserData user = new UserData("alice", "password123", "alice@email.com");
         userDAO.createUser(user);
         try {
@@ -49,7 +49,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetUserSuccess() throws DataAccessException {
+    public void getUser() throws DataAccessException {
         UserData user = new UserData("bob", "pass", "bob@email.com");
         userDAO.createUser(user);
         UserData result = userDAO.getUser("bob");
@@ -58,13 +58,13 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetUserFail() throws DataAccessException {
+    public void getUserMissing() throws DataAccessException {
         UserData result = userDAO.getUser("nonexistentuser");
         assertNull(result);
     }
 
     @Test
-    public void testClearUsersSuccess() throws DataAccessException {
+    public void clearUsers() throws DataAccessException {
         UserData user = new UserData("carol", "pass", "carol@email.com");
         userDAO.createUser(user);
         userDAO.clear();
@@ -73,7 +73,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testClearUsersAllowsReinsert() throws DataAccessException {
+    public void clearUsersCanReinsert() throws DataAccessException {
         UserData user = new UserData("carol", "pass", "carol@email.com");
         userDAO.createUser(user);
         userDAO.clear();
@@ -85,7 +85,7 @@ public class DAOTests {
     // ---- MySqlAuthDAO tests ----
 
     @Test
-    public void testCreateAuthSuccess() throws DataAccessException {
+    public void createAuth() throws DataAccessException {
         AuthData auth = new AuthData("token123", "dave");
         authDAO.createAuth(auth);
         AuthData result = authDAO.getAuth("token123");
@@ -93,7 +93,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testCreateAuthFail() throws DataAccessException {
+    public void createAuthDuplicate() throws DataAccessException {
         AuthData auth = new AuthData("token123", "dave");
         authDAO.createAuth(auth);
         try {
@@ -105,7 +105,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetAuthSuccess() throws DataAccessException {
+    public void getAuth() throws DataAccessException {
         AuthData auth = new AuthData("mytoken", "eve");
         authDAO.createAuth(auth);
         AuthData result = authDAO.getAuth("mytoken");
@@ -114,13 +114,13 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetAuthFail() throws DataAccessException {
+    public void getAuthMissing() throws DataAccessException {
         AuthData result = authDAO.getAuth("badtoken");
         assertNull(result);
     }
 
     @Test
-    public void testDeleteAuthSuccess() throws DataAccessException {
+    public void deleteAuth() throws DataAccessException {
         AuthData auth = new AuthData("deletetoken", "frank");
         authDAO.createAuth(auth);
         authDAO.deleteAuth("deletetoken");
@@ -129,7 +129,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testDeleteAuthFail() {
+    public void deleteAuthMissing() {
         try {
             authDAO.deleteAuth("nonexistenttoken");
             fail("Should have thrown an exception for deleting nonexistent token");
@@ -139,7 +139,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testClearAuthSuccess() throws DataAccessException {
+    public void clearAuth() throws DataAccessException {
         AuthData auth = new AuthData("sometoken", "grace");
         authDAO.createAuth(auth);
         authDAO.clear();
@@ -148,7 +148,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testClearAuthAllowsReinsert() throws DataAccessException {
+    public void clearAuthCanReinsert() throws DataAccessException {
         AuthData auth = new AuthData("sometoken", "grace");
         authDAO.createAuth(auth);
         authDAO.clear();
@@ -160,13 +160,13 @@ public class DAOTests {
     // ---- MySqlGameDAO tests ----
 
     @Test
-    public void testCreateGameSuccess() throws DataAccessException {
+    public void createGame() throws DataAccessException {
         int gameID = gameDAO.createGame("mygame");
         assertTrue(gameID > 0);
     }
 
     @Test
-    public void testCreateGameFail() {
+    public void createGameNull() {
         try {
             gameDAO.createGame(null);
             fail("Should have thrown an exception for null game name");
@@ -176,7 +176,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetGameSuccess() throws DataAccessException {
+    public void getGame() throws DataAccessException {
         int gameID = gameDAO.createGame("testgame");
         GameData result = gameDAO.getGame(gameID);
         assertNotNull(result);
@@ -184,13 +184,13 @@ public class DAOTests {
     }
 
     @Test
-    public void testGetGameFail() throws DataAccessException {
+    public void getGameMissing() throws DataAccessException {
         GameData result = gameDAO.getGame(99999);
         assertNull(result);
     }
 
     @Test
-    public void testListGamesSuccess() throws DataAccessException {
+    public void listGames() throws DataAccessException {
         gameDAO.createGame("game1");
         gameDAO.createGame("game2");
         List<GameData> games = gameDAO.listGames();
@@ -198,13 +198,13 @@ public class DAOTests {
     }
 
     @Test
-    public void testListGamesFail() throws DataAccessException {
+    public void listGamesEmpty() throws DataAccessException {
         List<GameData> games = gameDAO.listGames();
         assertEquals(0, games.size());
     }
 
     @Test
-    public void testUpdateGameSuccess() throws DataAccessException {
+    public void updateGame() throws DataAccessException {
         int gameID = gameDAO.createGame("updategame");
         GameData game = gameDAO.getGame(gameID);
         GameData updated = new GameData(gameID, "henry", game.blackUsername(), game.gameName(), game.game());
@@ -214,7 +214,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testUpdateGameFail() throws DataAccessException {
+    public void updateGameMissing() throws DataAccessException {
         int gameID = gameDAO.createGame("testgame");
         GameData game = gameDAO.getGame(gameID);
         GameData updated = new GameData(99999, "henry", game.blackUsername(), game.gameName(), game.game());
@@ -224,7 +224,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testClearGamesSuccess() throws DataAccessException {
+    public void clearGames() throws DataAccessException {
         int gameID = gameDAO.createGame("game1");
         gameDAO.clear();
         GameData result = gameDAO.getGame(gameID);
@@ -232,7 +232,7 @@ public class DAOTests {
     }
 
     @Test
-    public void testClearGamesAllowsReinsert() throws DataAccessException {
+    public void clearGamesCanReinsert() throws DataAccessException {
         gameDAO.createGame("game1");
         gameDAO.clear();
         int gameID = gameDAO.createGame("game1");
