@@ -1,17 +1,17 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import java.util.List;
 
 public class GameService {
-    private MemoryGameDAO gameDAO;
-    private MemoryAuthDAO authDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
 
-    public GameService(MemoryGameDAO gameDAO, MemoryAuthDAO authDAO) {
+    public GameService(GameDAO gameDAO, AuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }

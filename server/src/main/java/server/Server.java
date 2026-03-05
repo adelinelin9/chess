@@ -1,33 +1,41 @@
 package server;
 
-import io.javalin.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
+import io.javalin.Javalin;
+import io.javalin.http.Context;
 import model.AuthData;
 import model.GameData;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import io.javalin.http.Context;
 
 public class Server {
 
-    private final Javalin javalin;
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private final UserService userService = new UserService(userDAO, authDAO);
-    private final GameService gameService = new GameService(gameDAO, authDAO);
-    private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+    private UserService userService;
+    private GameService gameService;
+    private ClearService clearService;
+
     private final Gson gson = new Gson();
+    private final Javalin javalin;
 
     public Server() {
+        try {
+            DatabaseManager.createDatabase();
+            UserDAO userDAO = new MySqlUserDAO();
+            AuthDAO authDAO = new MySqlAuthDAO();
+            GameDAO gameDAO = new MySqlGameDAO();
+            userService = new UserService(userDAO, authDAO);
+            gameService = new GameService(gameDAO, authDAO);
+            clearService = new ClearService(userDAO, authDAO, gameDAO);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("failed to initialize database: " + e.getMessage());
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         javalin.delete("/db", this::clear);
@@ -49,8 +57,12 @@ public class Server {
     }
 
     private void clear(Context ctx) {
-        clearService.clear();
-        ctx.status(200).result("{}").contentType("application/json");
+        try {
+            clearService.clear();
+            ctx.status(200).result("{}").contentType("application/json");
+        } catch (DataAccessException e) {
+            sendError(ctx, 500, e.getMessage());
+        }
     }
 
     private void register(Context ctx) {
@@ -65,9 +77,13 @@ public class Server {
         } catch (DataAccessException e) {
             if (e.getMessage().contains("already taken")) {
                 sendError(ctx, 403, "already taken");
+            } else if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
             } else {
                 sendError(ctx, 400, "bad request");
             }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
 
@@ -81,7 +97,13 @@ public class Server {
             AuthData auth = userService.login(req.username(), req.password());
             ctx.status(200).result(gson.toJson(new AuthResp(auth.username(), auth.authToken()))).contentType("application/json");
         } catch (DataAccessException e) {
-            sendError(ctx, 401, "unauthorized");
+            if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
+            } else {
+                sendError(ctx, 401, "unauthorized");
+            }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
 
@@ -91,9 +113,16 @@ public class Server {
             userService.logout(authToken);
             ctx.status(200).result("{}").contentType("application/json");
         } catch (DataAccessException e) {
-            sendError(ctx, 401, "unauthorized");
+            if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
+            } else {
+                sendError(ctx, 401, "unauthorized");
+            }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
+
     private void listGames(Context ctx) {
         try {
             String authToken = ctx.header("Authorization");
@@ -108,7 +137,13 @@ public class Server {
             response.put("games", entries);
             ctx.status(200).result(gson.toJson(response)).contentType("application/json");
         } catch (DataAccessException e) {
-            sendError(ctx, 401, "unauthorized");
+            if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
+            } else {
+                sendError(ctx, 401, "unauthorized");
+            }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
 
@@ -125,7 +160,13 @@ public class Server {
             response.put("gameID", gameID);
             ctx.status(200).result(gson.toJson(response)).contentType("application/json");
         } catch (DataAccessException e) {
-            sendError(ctx, 401, "unauthorized");
+            if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
+            } else {
+                sendError(ctx, 401, "unauthorized");
+            }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
 
@@ -150,9 +191,13 @@ public class Server {
                 sendError(ctx, 403, "already taken");
             } else if (e.getMessage().contains("unauthorized")) {
                 sendError(ctx, 401, "unauthorized");
+            } else if (e.getMessage().contains("failed")) {
+                sendError(ctx, 500, e.getMessage());
             } else {
                 sendError(ctx, 400, "bad request");
             }
+        } catch (Exception e) {
+            sendError(ctx, 500, e.getMessage());
         }
     }
 
@@ -169,7 +214,4 @@ public class Server {
     private record JoinGameReq(String playerColor, Integer gameID) {}
     private record AuthResp(String username, String authToken) {}
     private record GameEntry(int gameID, String gameName, String whiteUsername, String blackUsername) {}
-
-
 }
-
