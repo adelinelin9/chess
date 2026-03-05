@@ -14,13 +14,11 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     private void configureTable() throws DataAccessException {
-        String createTable = """
-                CREATE TABLE IF NOT EXISTS users (
-                    username VARCHAR(256) NOT NULL PRIMARY KEY,
-                    password VARCHAR(256) NOT NULL,
-                    email VARCHAR(256) NOT NULL
-                )
-                """;
+        String createTable = "CREATE TABLE IF NOT EXISTS users (" +
+                "username VARCHAR(256) NOT NULL PRIMARY KEY, " +
+                "password VARCHAR(256) NOT NULL, " +
+                "email VARCHAR(256) NOT NULL" +
+                ")";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(createTable)) {
             stmt.executeUpdate();

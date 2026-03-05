@@ -14,12 +14,10 @@ public class MySqlAuthDAO implements AuthDAO {
     }
 
     private void configureTable() throws DataAccessException {
-        String createTable = """
-                CREATE TABLE IF NOT EXISTS auth (
-                    authToken VARCHAR(256) NOT NULL PRIMARY KEY,
-                    username VARCHAR(256) NOT NULL
-                )
-                """;
+        String createTable = "CREATE TABLE IF NOT EXISTS auth (" +
+                "authToken VARCHAR(256) NOT NULL PRIMARY KEY, " +
+                "username VARCHAR(256) NOT NULL" +
+                ")";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(createTable)) {
             stmt.executeUpdate();

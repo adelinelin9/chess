@@ -21,15 +21,13 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     private void configureTable() throws DataAccessException {
-        String createTable = """
-                CREATE TABLE IF NOT EXISTS games (
-                    gameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    whiteUsername VARCHAR(256),
-                    blackUsername VARCHAR(256),
-                    gameName VARCHAR(256) NOT NULL,
-                    game TEXT NOT NULL
-                )
-                """;
+        String createTable = "CREATE TABLE IF NOT EXISTS games (" +
+                "gameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                "whiteUsername VARCHAR(256), " +
+                "blackUsername VARCHAR(256), " +
+                "gameName VARCHAR(256) NOT NULL, " +
+                "game TEXT NOT NULL" +
+                ")";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(createTable)) {
             stmt.executeUpdate();

@@ -67,13 +67,14 @@ public class Server {
 
     private void register(Context ctx) {
         try {
-            var req = gson.fromJson(ctx.body(), RegisterReq.class);
-            if (req == null || req.username() == null || req.password() == null || req.email() == null) {
+            RegisterReq req = gson.fromJson(ctx.body(), RegisterReq.class);
+            if (req == null || req.username == null || req.password == null || req.email == null) {
                 sendError(ctx, 400, "bad request");
                 return;
             }
-            AuthData auth = userService.register(req.username(), req.password(), req.email());
-            ctx.status(200).result(gson.toJson(new AuthResp(auth.username(), auth.authToken()))).contentType("application/json");
+            AuthData auth = userService.register(req.username, req.password, req.email);
+            AuthResp resp = new AuthResp(auth.username(), auth.authToken());
+            ctx.status(200).result(gson.toJson(resp)).contentType("application/json");
         } catch (DataAccessException e) {
             if (e.getMessage().contains("already taken")) {
                 sendError(ctx, 403, "already taken");
@@ -89,13 +90,14 @@ public class Server {
 
     private void login(Context ctx) {
         try {
-            var req = gson.fromJson(ctx.body(), LoginReq.class);
-            if (req == null || req.username() == null || req.password() == null) {
+            LoginReq req = gson.fromJson(ctx.body(), LoginReq.class);
+            if (req == null || req.username == null || req.password == null) {
                 sendError(ctx, 400, "bad request");
                 return;
             }
-            AuthData auth = userService.login(req.username(), req.password());
-            ctx.status(200).result(gson.toJson(new AuthResp(auth.username(), auth.authToken()))).contentType("application/json");
+            AuthData auth = userService.login(req.username, req.password);
+            AuthResp resp = new AuthResp(auth.username(), auth.authToken());
+            ctx.status(200).result(gson.toJson(resp)).contentType("application/json");
         } catch (DataAccessException e) {
             if (e.getMessage().contains("failed")) {
                 sendError(ctx, 500, e.getMessage());
@@ -128,12 +130,12 @@ public class Server {
             String authToken = ctx.header("Authorization");
             List<GameData> games = gameService.listGames(authToken);
 
-            var entries = new ArrayList<GameEntry>();
-            for (var g : games) {
+            ArrayList<GameEntry> entries = new ArrayList<GameEntry>();
+            for (GameData g : games) {
                 entries.add(new GameEntry(g.gameID(), g.gameName(), g.whiteUsername(), g.blackUsername()));
             }
 
-            var response = new HashMap<String, Object>();
+            HashMap<String, Object> response = new HashMap<String, Object>();
             response.put("games", entries);
             ctx.status(200).result(gson.toJson(response)).contentType("application/json");
         } catch (DataAccessException e) {
@@ -150,13 +152,13 @@ public class Server {
     private void createGame(Context ctx) {
         try {
             String authToken = ctx.header("Authorization");
-            var req = gson.fromJson(ctx.body(), CreateGameReq.class);
-            if (req == null || req.gameName() == null) {
+            CreateGameReq req = gson.fromJson(ctx.body(), CreateGameReq.class);
+            if (req == null || req.gameName == null) {
                 sendError(ctx, 400, "bad request");
                 return;
             }
-            int gameID = gameService.createGame(authToken, req.gameName());
-            var response = new HashMap<String, Object>();
+            int gameID = gameService.createGame(authToken, req.gameName);
+            HashMap<String, Object> response = new HashMap<String, Object>();
             response.put("gameID", gameID);
             ctx.status(200).result(gson.toJson(response)).contentType("application/json");
         } catch (DataAccessException e) {
@@ -173,18 +175,18 @@ public class Server {
     private void joinGame(Context ctx) {
         try {
             String authToken = ctx.header("Authorization");
-            var req = gson.fromJson(ctx.body(), JoinGameReq.class);
+            JoinGameReq req = gson.fromJson(ctx.body(), JoinGameReq.class);
 
-            if (req == null || req.playerColor() == null || req.gameID() == null) {
+            if (req == null || req.playerColor == null || req.gameID == null) {
                 sendError(ctx, 400, "bad request");
                 return;
             }
-            if (!req.playerColor().equals("WHITE") && !req.playerColor().equals("BLACK")) {
+            if (!req.playerColor.equals("WHITE") && !req.playerColor.equals("BLACK")) {
                 sendError(ctx, 400, "bad request");
                 return;
             }
 
-            gameService.joinGame(authToken, req.playerColor(), req.gameID());
+            gameService.joinGame(authToken, req.playerColor, req.gameID);
             ctx.status(200).result("{}").contentType("application/json");
         } catch (DataAccessException e) {
             if (e.getMessage().contains("already taken")) {
@@ -202,16 +204,53 @@ public class Server {
     }
 
     private void sendError(Context ctx, int status, String message) {
-        var response = new HashMap<String, String>();
+        HashMap<String, String> response = new HashMap<String, String>();
         response.put("message", "Error: " + message);
         ctx.status(status).result(gson.toJson(response)).contentType("application/json");
     }
 
-    // request/response helper records
-    private record RegisterReq(String username, String password, String email) {}
-    private record LoginReq(String username, String password) {}
-    private record CreateGameReq(String gameName) {}
-    private record JoinGameReq(String playerColor, Integer gameID) {}
-    private record AuthResp(String username, String authToken) {}
-    private record GameEntry(int gameID, String gameName, String whiteUsername, String blackUsername) {}
+    // request/response helper classes
+    private static class RegisterReq {
+        String username;
+        String password;
+        String email;
+    }
+
+    private static class LoginReq {
+        String username;
+        String password;
+    }
+
+    private static class CreateGameReq {
+        String gameName;
+    }
+
+    private static class JoinGameReq {
+        String playerColor;
+        Integer gameID;
+    }
+
+    private static class AuthResp {
+        String username;
+        String authToken;
+
+        AuthResp(String username, String authToken) {
+            this.username = username;
+            this.authToken = authToken;
+        }
+    }
+
+    private static class GameEntry {
+        int gameID;
+        String gameName;
+        String whiteUsername;
+        String blackUsername;
+
+        GameEntry(int gameID, String gameName, String whiteUsername, String blackUsername) {
+            this.gameID = gameID;
+            this.gameName = gameName;
+            this.whiteUsername = whiteUsername;
+            this.blackUsername = blackUsername;
+        }
+    }
 }
