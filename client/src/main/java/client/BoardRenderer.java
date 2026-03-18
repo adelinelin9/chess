@@ -91,4 +91,45 @@ public class BoardRenderer {
         return sb.toString();
     }
 
-    
+    private static String getPieceString(ChessPiece piece) {
+        String color;
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            color = EscapeSequences.SET_TEXT_COLOR_WHITE;
+        } else {
+            color = EscapeSequences.SET_TEXT_COLOR_BLACK;
+        }
+
+        String symbol;
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                symbol = EscapeSequences.WHITE_KING;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                symbol = EscapeSequences.WHITE_QUEEN;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                symbol = EscapeSequences.WHITE_BISHOP;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                symbol = EscapeSequences.WHITE_KNIGHT;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                symbol = EscapeSequences.WHITE_ROOK;
+            } else {
+                symbol = EscapeSequences.WHITE_PAWN;
+            }
+        } else {
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                symbol = EscapeSequences.BLACK_KING;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                symbol = EscapeSequences.BLACK_QUEEN;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                symbol = EscapeSequences.BLACK_BISHOP;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                symbol = EscapeSequences.BLACK_KNIGHT;
+            } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                symbol = EscapeSequences.BLACK_ROOK;
+            } else {
+                symbol = EscapeSequences.BLACK_PAWN;
+            }
+        }
+
+        return color + symbol;
+    }
+}
