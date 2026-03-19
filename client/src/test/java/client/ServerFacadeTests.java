@@ -33,7 +33,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testRegisterSuccess() throws Exception {
+    public void register() throws Exception {
         ServerFacade.AuthResult result = facade.register("alice", "password", "alice@email.com");
         assertNotNull(result);
         assertEquals("alice", result.username);
@@ -41,7 +41,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testRegisterFail() throws Exception {
+    public void registerDuplicate() throws Exception {
         facade.register("alice", "password", "alice@email.com");
         try {
             facade.register("alice", "password", "alice@email.com");
@@ -52,7 +52,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testLoginSuccess() throws Exception {
+    public void login() throws Exception {
         facade.register("bob", "1234", "bob@email.com");
         ServerFacade.AuthResult result = facade.login("bob", "1234");
         assertNotNull(result);
@@ -60,7 +60,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testLoginFail() throws Exception {
+    public void loginWrongPassword() throws Exception {
         facade.register("bob", "1234", "bob@email.com");
         try {
             facade.login("bob", "wrongpassword");
@@ -71,14 +71,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testLogoutSuccess() throws Exception {
+    public void logout() throws Exception {
         ServerFacade.AuthResult auth = facade.register("carol", "pass", "carol@email.com");
         facade.logout(auth.authToken);
         assertTrue(true);
     }
 
     @Test
-    public void testLogoutFail() throws Exception {
+    public void logoutBadToken() throws Exception {
         try {
             facade.logout("badtoken");
             fail("Should have thrown an exception for bad token");
@@ -88,14 +88,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testCreateGameSuccess() throws Exception {
+    public void createGame() throws Exception {
         ServerFacade.AuthResult auth = facade.register("dave", "pass", "dave@email.com");
         int gameID = facade.createGame(auth.authToken, "mygame");
         assertTrue(gameID > 0);
     }
 
     @Test
-    public void testCreateGameFail() throws Exception {
+    public void createGameBadToken() throws Exception {
         try {
             facade.createGame("badtoken", "mygame");
             fail("Should have thrown an exception for bad token");
@@ -105,7 +105,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testListGamesSuccess() throws Exception {
+    public void listGames() throws Exception {
         ServerFacade.AuthResult auth = facade.register("eve", "pass", "eve@email.com");
         facade.createGame(auth.authToken, "game1");
         facade.createGame(auth.authToken, "game2");
@@ -114,7 +114,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testListGamesFail() throws Exception {
+    public void listGamesBadToken() throws Exception {
         try {
             facade.listGames("badtoken");
             fail("Should have thrown an exception for bad token");
@@ -124,7 +124,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testJoinGameSuccess() throws Exception {
+    public void joinGame() throws Exception {
         ServerFacade.AuthResult auth = facade.register("frank", "pass", "frank@email.com");
         int gameID = facade.createGame(auth.authToken, "testgame");
         facade.joinGame(auth.authToken, "WHITE", gameID);
@@ -133,7 +133,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void testJoinGameFail() throws Exception {
+    public void joinGameTaken() throws Exception {
         ServerFacade.AuthResult auth1 = facade.register("grace", "pass", "grace@email.com");
         ServerFacade.AuthResult auth2 = facade.register("henry", "pass", "henry@email.com");
         int gameID = facade.createGame(auth1.authToken, "testgame");
