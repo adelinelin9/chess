@@ -84,15 +84,19 @@ public class ChessClient {
         }
     }
 
+    private void printPostLoginHelp() {
+        System.out.println("  list - list all games");
+        System.out.println("  create <game name> - create a new game");
+        System.out.println("  join <game number> <WHITE|BLACK> - join a game");
+        System.out.println("  observe <game number> - observe a game");
+        System.out.println("  logout - log out");
+        System.out.println("  quit - exit the program");
+        System.out.println("  help - show this help message");
+    }
+
     private void handlePostLogin(String command, String[] parts) {
         if (command.equals("help")) {
-            System.out.println("  list - list all games");
-            System.out.println("  create <game name> - create a new game");
-            System.out.println("  join <game number> <WHITE|BLACK> - join a game");
-            System.out.println("  observe <game number> - observe a game");
-            System.out.println("  logout - log out");
-            System.out.println("  quit - exit the program");
-            System.out.println("  help - show this help message");
+            printPostLoginHelp();
         } else if (command.equals("list")) {
             try {
                 List<ServerFacade.GameEntry> games = server.listGames(authToken);
