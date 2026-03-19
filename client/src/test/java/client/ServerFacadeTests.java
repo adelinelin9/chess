@@ -1,7 +1,10 @@
 package client;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.Server;
 
 import java.util.List;
 
@@ -9,7 +12,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ServerFacadeTests {
 
-    private static ServerFacade facade = new ServerFacade(8080);
+    private static Server server;
+    private static ServerFacade facade;
+
+    @BeforeAll
+    public static void init() {
+        server = new Server();
+        var port = server.run(0);
+        facade = new ServerFacade(port);
+    }
+
+    @AfterAll
+    public static void stopServer() {
+        server.stop();
+    }
 
     @BeforeEach
     public void clearData() throws Exception {
