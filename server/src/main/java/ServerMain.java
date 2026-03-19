@@ -1,12 +1,13 @@
-import chess.*;
-import server.Server;
+package server;
 
 public class ServerMain {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Server: " + piece);
-
+        int port = 8080;
+        if (args.length == 1) {
+            port = Integer.parseInt(args[0]);
+        }
         Server server = new Server();
-        server.run(8080);
+        int actualPort = server.run(port);
+        System.out.println("Server started on port " + actualPort);
     }
 }
