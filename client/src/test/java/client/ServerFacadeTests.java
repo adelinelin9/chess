@@ -1,6 +1,5 @@
 package client;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,11 +19,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         facade = new ServerFacade(port);
-    }
-
-    @AfterAll
-    public static void stopServer() {
-        server.stop();
+        System.out.println("Started test HTTP server on " + port);
     }
 
     @BeforeEach

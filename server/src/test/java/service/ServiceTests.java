@@ -31,13 +31,13 @@ public class ServiceTests {
     }
 
     @Test
-    public void testRegisterSuccess() throws DataAccessException {
+    public void register() throws DataAccessException {
         AuthData result = userService.register("alice", "password", "alice@email.com");
         assertNotNull(result);
     }
 
     @Test
-    public void testRegisterFail() throws DataAccessException {
+    public void registerDuplicate() throws DataAccessException {
         userService.register("alice", "password", "alice@email.com");
         try {
             userService.register("alice", "password", "alice@email.com");
@@ -48,7 +48,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testLoginSuccess() throws DataAccessException {
+    public void login() throws DataAccessException {
         userService.register("bob", "1234", "bob@email.com");
         AuthData result = userService.login("bob", "1234");
         assertNotNull(result);
@@ -56,7 +56,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testLoginFail() throws DataAccessException {
+    public void loginWrongPassword() throws DataAccessException {
         userService.register("bob", "1234", "bob@email.com");
         try {
             userService.login("bob", "wrongpassword");
@@ -67,15 +67,14 @@ public class ServiceTests {
     }
 
     @Test
-    public void testLogoutSuccess() throws DataAccessException {
+    public void logout() throws DataAccessException {
         AuthData auth = userService.register("carol", "pass", "carol@email.com");
         userService.logout(auth.authToken());
-        // if no exception was thrown, logout worked
         assertTrue(true);
     }
 
     @Test
-    public void testLogoutFail() {
+    public void logoutBadToken() {
         try {
             userService.logout("fakebadtoken");
             fail("Should have thrown an exception");
@@ -85,14 +84,14 @@ public class ServiceTests {
     }
 
     @Test
-    public void testCreateGameSuccess() throws DataAccessException {
+    public void createGame() throws DataAccessException {
         AuthData auth = userService.register("dave", "pass", "dave@email.com");
         int gameID = gameService.createGame(auth.authToken(), "mygame");
         assertTrue(gameID > 0);
     }
 
     @Test
-    public void testCreateGameFail() {
+    public void createGameBadToken() {
         try {
             gameService.createGame("badtoken", "mygame");
             fail("Should have thrown an exception");
@@ -102,7 +101,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testListGamesSuccess() throws DataAccessException {
+    public void listGames() throws DataAccessException {
         AuthData auth = userService.register("eve", "pass", "eve@email.com");
         gameService.createGame(auth.authToken(), "game1");
         gameService.createGame(auth.authToken(), "game2");
@@ -111,7 +110,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testListGamesFail() {
+    public void listGamesBadToken() {
         try {
             gameService.listGames("badtoken");
             fail("Should have thrown an exception");
@@ -121,7 +120,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testJoinGameSuccess() throws DataAccessException {
+    public void joinGame() throws DataAccessException {
         AuthData auth = userService.register("frank", "pass", "frank@email.com");
         int gameID = gameService.createGame(auth.authToken(), "testgame");
         gameService.joinGame(auth.authToken(), "WHITE", gameID);
@@ -130,7 +129,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testJoinGameFail() throws DataAccessException {
+    public void joinGameTaken() throws DataAccessException {
         AuthData auth1 = userService.register("grace", "pass", "grace@email.com");
         AuthData auth2 = userService.register("henry", "pass", "henry@email.com");
         int gameID = gameService.createGame(auth1.authToken(), "testgame");
@@ -144,7 +143,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testClearSuccess() throws DataAccessException {
+    public void clearData() throws DataAccessException {
         AuthData auth = userService.register("ivan", "pass", "ivan@email.com");
         gameService.createGame(auth.authToken(), "game1");
         clearService.clear();
@@ -157,7 +156,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testClearAllowsReregister() throws DataAccessException {
+    public void clearCanReregister() throws DataAccessException {
         userService.register("judy", "pass", "judy@email.com");
         clearService.clear();
         AuthData auth = userService.register("judy", "pass", "judy@email.com");
